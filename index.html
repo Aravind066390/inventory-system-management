@@ -102,6 +102,9 @@
       color: #333;
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
+    input[type="date"] {
+      padding: 9px 10px;
+    }
     textarea {
       min-height: 100px;
       resize: vertical;
@@ -361,6 +364,7 @@
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>Date Added</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -381,6 +385,8 @@
             <input type="number" id="item-quantity" placeholder="Enter quantity" required>
             <label for="item-price">Price</label>
             <input type="number" id="item-price" placeholder="Enter price" required>
+            <label for="item-date">Date Added</label>
+            <input type="date" id="item-date" required>
             <label for="item-description">Description</label>
             <textarea id="item-description" placeholder="Enter item description"></textarea>
             <label for="item-image">Image URL</label>
@@ -407,6 +413,7 @@
                 <input type="number" id="detail-quantity" readonly>
                 <button onclick="increaseQuantity()">+</button>
               </div>
+              <p><span class="detail-label">Date Added:</span> <span id="detail-date" class="detail-value"></span></p>
               <p><span class="detail-label">Total Value:</span> <span id="detail-total" class="detail-value"></span></p>
             </div>
             <button class="edit-detail-button" onclick="switchToEditMode()">Edit Details</button>
@@ -423,6 +430,8 @@
               <input type="number" id="edit-price" required>
               <label for="edit-quantity">Quantity</label>
               <input type="number" id="edit-quantity" required>
+              <label for="edit-date">Date Added</label>
+              <input type="date" id="edit-date" required>
               <label for="edit-image">Image URL</label>
               <input type="text" id="edit-image">
               <button type="submit" class="save-detail-button">Save Changes</button>
@@ -455,6 +464,9 @@
       if (savedTheme === 'dark') {
         enableDarkMode();
       }
+      
+      // Set default date to today for new items
+      document.getElementById('item-date').valueAsDate = new Date();
     };
     
     // Toggle between light and dark mode
@@ -488,13 +500,16 @@
       const itemName = document.getElementById('item-name').value;
       const itemQuantity = document.getElementById('item-quantity').value;
       const itemPrice = document.getElementById('item-price').value;
+      const itemDate = document.getElementById('item-date').value;
       const itemDescription = document.getElementById('item-description').value;
       const itemImage = document.getElementById('item-image').value;
-      if (itemName && itemQuantity && itemPrice) {
+      
+      if (itemName && itemQuantity && itemPrice && itemDate) {
         const newItem = {
           name: itemName,
           quantity: parseInt(itemQuantity),
           price: parseFloat(itemPrice),
+          date: itemDate,
           description: itemDescription || 'No description available',
           image: itemImage || 'placeholder.jpg'
         };
@@ -506,6 +521,7 @@
         alert('Please fill out all required fields');
       }
     });
+    
     // Handle form submission for editing items
     document.getElementById('editForm').addEventListener('submit', function(event) {
       event.preventDefault();
@@ -515,6 +531,7 @@
           description: document.getElementById('edit-description').value,
           price: parseFloat(document.getElementById('edit-price').value),
           quantity: parseInt(document.getElementById('edit-quantity').value),
+          date: document.getElementById('edit-date').value,
           image: document.getElementById('edit-image').value
         };
         updateItem(currentItemIndex, updatedItem);
@@ -522,6 +539,13 @@
         refreshDetailView(updatedItem);
       }
     });
+    
+    // Format date for display
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+    
     // Function to add item to inventory list
     function addItemToInventory(item, index) {
       const tableBody = document.querySelector('#inventoryTable tbody');
@@ -530,6 +554,7 @@
         <td class="clickable" onclick="viewItemDetails(${index})">${item.name}</td>
         <td>${item.quantity}</td>
         <td>₹${parseFloat(item.price).toFixed(2)}</td>
+        <td>${formatDate(item.date)}</td>
         <td class="actions">
           <button class="view-button" onclick="viewItemDetails(${index})">View</button>
           <button onclick="removeItem(this, ${index})">Remove</button>
@@ -537,6 +562,7 @@
       `;
       tableBody.appendChild(row);
     }
+    
     // Function to view item details
     function viewItemDetails(index) {
       const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -553,36 +579,44 @@
         refreshDetailView(item);
       }
     }
+    
     // Refresh the detail view with current item data
     function refreshDetailView(item) {
       document.getElementById('detail-title').textContent = item.name;
       document.getElementById('detail-description').textContent = item.description;
       document.getElementById('detail-price').textContent = `₹${parseFloat(item.price).toFixed(2)}`;
       document.getElementById('detail-quantity').value = item.quantity;
+      document.getElementById('detail-date').textContent = formatDate(item.date);
       document.getElementById('detail-total').textContent = `₹${(item.price * item.quantity).toFixed(2)}`;
+      
       // Set image src with fallback
       const imgElement = document.getElementById('detail-image');
       imgElement.src = item.image;
       imgElement.onerror = function() {
         this.src = 'https://via.placeholder.com/200x150?text=No+Image';
       };
+      
       // Set edit form values as well
       document.getElementById('edit-name').value = item.name;
       document.getElementById('edit-description').value = item.description;
       document.getElementById('edit-price').value = item.price;
       document.getElementById('edit-quantity').value = item.quantity;
+      document.getElementById('edit-date').value = item.date;
       document.getElementById('edit-image').value = item.image;
     }
+    
     // Switch to edit mode for details
     function switchToEditMode() {
       document.getElementById('detailPanel').classList.remove('detail-view');
       document.getElementById('detailPanel').classList.add('detail-edit');
     }
+    
     // Switch back to read mode for details
     function switchToReadMode() {
       document.getElementById('detailPanel').classList.remove('detail-edit');
       document.getElementById('detailPanel').classList.add('detail-view');
     }
+    
     // Cancel edit operation
     function cancelEdit() {
       // Simply switch back to read mode, without saving changes
@@ -593,11 +627,13 @@
         refreshDetailView(storedItems[currentItemIndex]);
       }
     }
+    
     // Hide the detail panel
     function hideDetailPanel() {
       document.getElementById('detailPanel').style.display = 'none';
       currentItemIndex = -1;
     }
+    
     // Increase quantity from detail view
     function increaseQuantity() {
       if (currentItemIndex >= 0) {
@@ -611,6 +647,7 @@
         }
       }
     }
+    
     // Decrease quantity from detail view
     function decreaseQuantity() {
       if (currentItemIndex >= 0) {
@@ -624,6 +661,7 @@
         }
       }
     }
+    
     // Save a new item
     function saveItem(item) {
       const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -632,6 +670,7 @@
       // Add to table display
       addItemToInventory(item, storedItems.length - 1);
     }
+    
     // Update an existing item
     function updateItem(index, updatedItem) {
       const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -642,6 +681,7 @@
         refreshInventoryTable();
       }
     }
+    
     // Remove item from inventory list and update localStorage
     function removeItem(button, index) {
       const row = button.closest('tr');
@@ -657,6 +697,7 @@
       // Refresh the table to update indices
       refreshInventoryTable();
     }
+    
     // Refresh the entire inventory table
     function refreshInventoryTable() {
       const tableBody = document.querySelector('#inventoryTable tbody');
@@ -666,6 +707,7 @@
         addItemToInventory(item, index);
       });
     }
+    
     // Toggle the form panel
     function toggleFormPanel() {
       const formPanel = document.getElementById('formPanel');
@@ -673,10 +715,13 @@
       if (formPanel.style.display === 'none' || formPanel.style.display === '') {
         formPanel.style.display = 'block';
         detailPanel.style.display = 'none';
+        // Set default date to today for new items
+        document.getElementById('item-date').valueAsDate = new Date();
       } else {
         formPanel.style.display = 'none';
       }
     }
+    
     // Clear form inputs after adding item
     function clearForm() {
       document.getElementById('item-name').value = '';
@@ -684,7 +729,9 @@
       document.getElementById('item-price').value = '';
       document.getElementById('item-description').value = '';
       document.getElementById('item-image').value = '';
+      document.getElementById('item-date').valueAsDate = new Date();
     }
+    
     // Exit button functionality to clear all inventory and localStorage
     function exitInventory() {
       if (confirm('Are you sure you want to reset.')) {
@@ -699,6 +746,7 @@
         window.close();
       }
     }
+    
     // Search item functionality
     function searchItem() {
       const searchTerm = document.getElementById('search-bar').value.toLowerCase();
