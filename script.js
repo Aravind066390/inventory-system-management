@@ -69,9 +69,11 @@ function processMessage(message) {
     return "You're welcome! Feel free to ask if you need any more help with your inventory.";
   } else if (message.includes('help')) {
     return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
-  } else if (message.includes('inventory management system do')) {
-    return " inventory management system is a software for managing inventory details and made for easy usage please provide your feedback by clicking the link given below";
-  } else {
+  } else if (message.includes('inventory')) {
+    return "inventory management system is a software for managing inventory details and made for easy usage please provide your feedback by clicking the link given below";
+  } else if (message.includes('manage||control||handle')) {
+    return " you can control your inventory by using proper accounting of your used inventory total value of goods etc.. ";
+   }else {
     return "I'm not sure how to help with that. Try asking about adding, editing, or deleting items, searching the inventory, or changing the theme.";
   }
 }
