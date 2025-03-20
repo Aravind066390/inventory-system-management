@@ -71,7 +71,7 @@ function processMessage(message) {
     return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
   } else if (message.includes('useless')) {
     return "im sorry 😭😿";
-  } else if (message.includes('thanks')) {
+  } else if (message.includes('thank')) {
     return " you are welcome 🎉🎉";
    }else {
     return "I'm not sure how to help with that. Try asking about adding, editing, or deleting items, searching the inventory, or changing the theme.";
