@@ -81,7 +81,7 @@ function processMessage(message) {
       return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
     } 
   else if (message.includes('feature')) {
-      return "it is a simple inventory management system for complex management and more userfriendly features its still under under development we promise more features in future please use the features which is already available ";
+      return "it is a simple inventory management system for complex management and more userfriendly features its still under development we promise more features in future please use the features which is already available ";
     } 
   else if (message.includes('description')) {
       return "it contains details about the stored items search the item press on view you will find the description";
