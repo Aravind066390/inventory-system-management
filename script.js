@@ -67,7 +67,11 @@ function processMessage(message) {
     return "You can update item quantity by viewing the item details and using the + and - buttons next to the quantity field.";
   } else if (message.includes('thank')) {
     return "You're welcome! Feel free to ask if you need any more help with your inventory.";
-  } else if (message.includes('help')) {
+  } 
+    else if (message.include('feedback')) {
+    return PhoneNumber="91-63366739780";
+}
+  else if (message.includes('help')) {
     return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
   }else if (message.includes('improvement')) {
       return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
