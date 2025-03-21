@@ -68,9 +68,6 @@ function processMessage(message) {
   } else if (message.includes('thank')) {
     return "You're welcome! Feel free to ask if you need any more help with your inventory.";
   } 
-    else if (message.include('feedback')) {
-    return PhoneNumber="91-63366739780";
-}
   else if (message.includes('help')) {
     return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
   }else if (message.includes('improvement')) {
@@ -117,7 +114,11 @@ function processMessage(message) {
     }
   else if (message.includes('feedback')) {
       return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to make it a more improved version";
-    }
+   if (message.include('feedback')) {
+    return PhoneNumber="91-63366739780";
+  }
+  
+  }
   else if (message.includes('useless')) {
       return "sorry for the inconvenience we will be better in future with improved version  ";
     }
