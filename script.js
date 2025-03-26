@@ -186,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       const itemName = document.getElementById('item-name').value;
       const itemQuantity = document.getElementById('item-quantity').value;
+      const item-date = document. getElementById ('item-date'). value;
       const itemPrice = document.getElementById('item-price').value;
       const itemDescription = document.getElementById('item-description').value;
       const itemImage = document.getElementById('item-image').value;
