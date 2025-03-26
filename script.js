@@ -381,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearForm() {
       document.getElementById('item-name').value = '';
       document.getElementById('item-quantity').value = '';
+      document. getElementById ('item-date').value='';
       document.getElementById('item-price').value = '';
       document.getElementById('item-description').value = '';
       document.getElementById('item-image').value = '';
