@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       const itemName = document.getElementById('item-name').value;
       const itemQuantity = document.getElementById('item-quantity').value;
-      const item-date = document. getElementById ('item-date'). value;
+   
       const itemPrice = document.getElementById('item-price').value;
       const itemDescription = document.getElementById('item-description').value;
       const itemImage = document.getElementById('item-image').value;
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearForm() {
       document.getElementById('item-name').value = '';
       document.getElementById('item-quantity').value = '';
-      document. getElementById ('item-date').value='';
+    
       document.getElementById('item-price').value = '';
       document.getElementById('item-description').value = '';
       document.getElementById('item-image').value = '';
