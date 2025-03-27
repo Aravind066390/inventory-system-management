@@ -1,107 +1,130 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const inventoryForm = document.getElementById("inventoryForm");
-    const inventoryTable = document.querySelector("#inventoryTable tbody");
-    const toggleFormButton = document.getElementById("toggleFormButton");
-    const formPanel = document.getElementById("formPanel");
-    const searchBar = document.getElementById("search-bar");
-    const searchButton = document.getElementById("searchButton");
-    const themeToggleBtn = document.getElementById("themeToggleBtn");
-    const chatToggleBtn = document.getElementById("chatToggleBtn");
-    const chatbotContainer = document.getElementById("chatbotContainer");
-    const closeChatButton = document.getElementById("closeChatButton");
-    const resetButton = document.getElementById("resetButton");
+// Get Elements
+const inventoryForm = document.getElementById("inventoryForm");
+const inventoryTable = document.getElementById("inventoryTable").querySelector("tbody");
+const searchInput = document.getElementById("search-bar");
+const searchButton = document.getElementById("searchButton");
+const toggleFormButton = document.getElementById("toggleFormButton");
+const formPanel = document.getElementById("formPanel");
+const resetButton = document.getElementById("resetButton");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const chatToggleBtn = document.getElementById("chatToggleBtn");
+const chatbotContainer = document.getElementById("chatbotContainer");
 
-    let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+// Inventory Data (Stored in Local Storage)
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
-    function updateLocalStorage() {
-        localStorage.setItem("inventory", JSON.stringify(inventory));
+// Function to Render Inventory Table
+function renderInventory() {
+    inventoryTable.innerHTML = ""; // Clear previous entries
+    inventory.forEach((item, index) => {
+        let row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.date}</td>
+            <td>₹${item.price}</td>
+            <td>
+                <button class="edit-btn" onclick="editItem(${index})">✏</button>
+                <button class="delete-btn" onclick="deleteItem(${index})">🗑</button>
+            </td>
+        `;
+        inventoryTable.appendChild(row);
+    });
+}
+
+// Function to Add Inventory Item
+inventoryForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    const itemName = document.getElementById("item-name").value.trim();
+    const itemQuantity = document.getElementById("item-quantity").value;
+    const itemPrice = document.getElementById("item-price").value;
+    const itemDate = document.getElementById("item-date").value;
+    const itemDescription = document.getElementById("item-description").value;
+    const itemImage = document.getElementById("item-image").value;
+
+    if (!itemName || !itemQuantity || !itemPrice || !itemDate) {
+        alert("Please fill all required fields!");
+        return;
     }
 
-    function addInventoryItem(name, quantity, price, date, description, image) {
-        const newItem = {
-            id: Date.now(),
-            name,
-            quantity: parseInt(quantity),
-            price: parseFloat(price),
-            date,
-            description,
-            image,
-        };
-        inventory.push(newItem);
-        updateLocalStorage();
+    inventory.push({ name: itemName, quantity: itemQuantity, price: itemPrice, date: itemDate, description: itemDescription, image: itemImage });
+
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    renderInventory();
+    inventoryForm.reset(); // Clear form fields
+});
+
+// Function to Delete Inventory Item
+function deleteItem(index) {
+    if (confirm("Are you sure you want to delete this item?")) {
+        inventory.splice(index, 1);
+        localStorage.setItem("inventory", JSON.stringify(inventory));
         renderInventory();
     }
+}
 
-    function renderInventory(searchQuery = "") {
-        inventoryTable.innerHTML = "";
-        inventory.forEach((item) => {
-            if (
-                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.description.toLowerCase().includes(searchQuery.toLowerCase())
-            ) {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.date}</td>
-                    <td>$${item.price.toFixed(2)}</td>
-                    <td>
-                        <button class="edit-btn" data-id="${item.id}">✏</button>
-                        <button class="delete-btn" data-id="${item.id}">🗑</button>
-                    </td>
-                `;
-                inventoryTable.appendChild(row);
-            }
-        });
-    }
+// Function to Edit Inventory Item
+function editItem(index) {
+    const item = inventory[index];
+    document.getElementById("item-name").value = item.name;
+    document.getElementById("item-quantity").value = item.quantity;
+    document.getElementById("item-price").value = item.price;
+    document.getElementById("item-date").value = item.date;
+    document.getElementById("item-description").value = item.description;
+    document.getElementById("item-image").value = item.image;
 
-    inventoryForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const name = document.getElementById("item-name").value;
-        const quantity = document.getElementById("item-quantity").value;
-        const price = document.getElementById("item-price").value;
-        const date = document.getElementById("item-date").value;
-        const description = document.getElementById("item-description").value;
-        const image = document.getElementById("item-image").value;
+    inventory.splice(index, 1); // Remove item from list while editing
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    renderInventory();
+}
 
-        addInventoryItem(name, quantity, price, date, description, image);
-        inventoryForm.reset();
+// Search Functionality
+searchButton.addEventListener("click", function () {
+    let searchText = searchInput.value.toLowerCase();
+    let filteredInventory = inventory.filter(item => item.name.toLowerCase().includes(searchText) || item.description.toLowerCase().includes(searchText));
+
+    inventoryTable.innerHTML = "";
+    filteredInventory.forEach((item, index) => {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.date}</td>
+            <td>₹${item.price}</td>
+            <td>
+                <button class="edit-btn" onclick="editItem(${index})">✏</button>
+                <button class="delete-btn" onclick="deleteItem(${index})">🗑</button>
+            </td>
+        `;
+        inventoryTable.appendChild(row);
     });
+});
 
-    inventoryTable.addEventListener("click", (event) => {
-        if (event.target.classList.contains("delete-btn")) {
-            const itemId = parseInt(event.target.dataset.id);
-            inventory = inventory.filter((item) => item.id !== itemId);
-            updateLocalStorage();
-            renderInventory();
-        }
-    });
+// Toggle Form Panel
+toggleFormButton.addEventListener("click", () => {
+    formPanel.style.display = formPanel.style.display === "none" ? "block" : "none";
+});
 
-    toggleFormButton.addEventListener("click", () => {
-        formPanel.classList.toggle("hidden");
-    });
-
-    searchButton.addEventListener("click", () => {
-        renderInventory(searchBar.value);
-    });
-
-    themeToggleBtn.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-    });
-
-    chatToggleBtn.addEventListener("click", () => {
-        chatbotContainer.classList.toggle("active");
-    });
-
-    closeChatButton.addEventListener("click", () => {
-        chatbotContainer.classList.remove("active");
-    });
-
-    resetButton.addEventListener("click", () => {
+// Reset Inventory
+resetButton.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset the inventory?")) {
         localStorage.removeItem("inventory");
         inventory = [];
         renderInventory();
-    });
-
-    renderInventory();
+    }
 });
+
+// Theme Toggle
+themeToggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+});
+
+// Chatbot Toggle
+chatToggleBtn.addEventListener("click", () => {
+    chatbotContainer.classList.toggle("show-chat");
+});
+
+// Load Inventory on Page Load
+renderInventory();
