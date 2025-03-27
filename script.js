@@ -1,4 +1,4 @@
-class InventorySystem {
+class InventoryManager {
     constructor() {
         this.inventory = [];
         this.initEventListeners();
@@ -6,44 +6,99 @@ class InventorySystem {
     }
 
     initEventListeners() {
-        // Add Item Modal Interactions
-        document.getElementById('addItemBtn').addEventListener('click', () => this.openAddItemModal());
-        document.querySelector('.close-btn').addEventListener('click', () => this.closeAddItemModal());
-        document.getElementById('addItemForm').addEventListener('submit', (e) => this.addItem(e));
+        // Add Item Button
+        document.getElementById('addItemBtn').addEventListener('click', () => this.openModal());
 
-        // Chatbot Interactions
-        document.getElementById('chatbotToggle').addEventListener('click', () => this.toggleChatbot());
-        document.getElementById('sendChatBtn').addEventListener('click', () => this.sendChatMessage());
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.sendChatMessage();
-        });
+        // Close Modal Button
+        document.querySelector('.close-btn').addEventListener('click', () => this.closeModal());
+
+        // Form Submission
+        document.getElementById('itemForm').addEventListener('submit', (e) => this.saveItem(e));
+
+        // Image Upload Preview
+        document.getElementById('itemImage').addEventListener('change', (e) => this.previewImage(e));
+
+        // Reset Button
+        document.getElementById('resetBtn').addEventListener('click', () => this.resetInventory());
     }
 
-    openAddItemModal() {
-        document.getElementById('addItemModal').style.display = 'block';
+    openModal(item = null) {
+        const modal = document.getElementById('itemModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const saveBtn = document.getElementById('saveItemBtn');
+
+        // Reset form
+        document.getElementById('itemForm').reset();
+        document.getElementById('imagePreview').innerHTML = '';
+
+        if (item) {
+            // Edit mode
+            modalTitle.textContent = 'Edit Item';
+            saveBtn.textContent = 'Update Item';
+            
+            // Populate form with existing item data
+            document.getElementById('itemId').value = item.id;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemDate').value = item.date;
+            document.getElementById('itemQuantity').value = item.quantity;
+            document.getElementById('itemDescription').value = item.description || '';
+            
+            // Show existing image if available
+            if (item.imageUrl) {
+                const previewImg = document.createElement('img');
+                previewImg.src = item.imageUrl;
+                document.getElementById('imagePreview').appendChild(previewImg);
+            }
+        } else {
+            // Add mode
+            modalTitle.textContent = 'Add New Item';
+            saveBtn.textContent = 'Save Item';
+        }
+
+        modal.style.display = 'block';
     }
 
-    closeAddItemModal() {
-        document.getElementById('addItemModal').style.display = 'none';
+    closeModal() {
+        document.getElementById('itemModal').style.display = 'none';
     }
 
-    addItem(e) {
+    previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = ''; // Clear previous preview
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    saveItem(e) {
         e.preventDefault();
-        
-        // Get form values
+
+        // Collect form data
+        const id = document.getElementById('itemId').value || Date.now().toString();
         const name = document.getElementById('itemName').value;
         const date = document.getElementById('itemDate').value;
-        const price = parseFloat(document.getElementById('itemPrice').value);
-        const quantity = parseInt(document.getElementById('itemQuantity').value);
+        const quantity = document.getElementById('itemQuantity').value;
+        const description = document.getElementById('itemDescription').value;
         const imageFile = document.getElementById('itemImage').files[0];
+
+        // Existing item or new item
+        const existingItemIndex = this.inventory.findIndex(item => item.id === id);
 
         // Create item object
         const item = {
-            id: Date.now(),
+            id,
             name,
             date,
-            price,
             quantity,
+            description,
             imageUrl: null
         };
 
@@ -52,61 +107,81 @@ class InventorySystem {
             const reader = new FileReader();
             reader.onload = (event) => {
                 item.imageUrl = event.target.result;
-                this.inventory.push(item);
+                
+                if (existingItemIndex !== -1) {
+                    // Update existing item
+                    this.inventory[existingItemIndex] = item;
+                } else {
+                    // Add new item
+                    this.inventory.push(item);
+                }
+
                 this.saveInventoryToLocalStorage();
                 this.renderInventory();
-                this.closeAddItemModal();
-                this.resetAddItemForm();
+                this.closeModal();
             };
             reader.readAsDataURL(imageFile);
         } else {
-            this.inventory.push(item);
+            // If no new image, use existing image or keep it null
+            if (existingItemIndex !== -1) {
+                item.imageUrl = this.inventory[existingItemIndex].imageUrl;
+                this.inventory[existingItemIndex] = item;
+            } else {
+                this.inventory.push(item);
+            }
+
             this.saveInventoryToLocalStorage();
             this.renderInventory();
-            this.closeAddItemModal();
-            this.resetAddItemForm();
+            this.closeModal();
         }
     }
 
-    resetAddItemForm() {
-        document.getElementById('addItemForm').reset();
-    }
-
     renderInventory() {
-        const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = ''; // Clear existing items
+        const grid = document.getElementById('inventoryGrid');
+        grid.innerHTML = ''; // Clear existing items
 
         this.inventory.forEach(item => {
             const itemCard = document.createElement('div');
             itemCard.classList.add('inventory-item');
+            
             itemCard.innerHTML = `
                 ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}">` : ''}
-                <h3>${item.name}</h3>
-                <p>Date: ${item.date}</p>
-                <p>Price: $${item.price.toFixed(2)}</p>
-                <p>Quantity: ${item.quantity}</p>
+                <div class="item-details">
+                    <h3>${item.name}</h3>
+                    <p>Date: ${item.date}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                    ${item.description ? `<p>Description: ${item.description}</p>` : ''}
+                </div>
                 <div class="item-actions">
-                    <button onclick="inventorySystem.editItem(${item.id})">Edit</button>
-                    <button onclick="inventorySystem.deleteItem(${item.id})">Delete</button>
+                    <button onclick="inventoryManager.openModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button onclick="inventoryManager.deleteItem('${item.id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
                 </div>
             `;
-            inventoryList.appendChild(itemCard);
+
+            grid.appendChild(itemCard);
         });
     }
 
-    editItem(id) {
-        const item = this.inventory.find(i => i.id === id);
-        if (item) {
-            // Implement edit functionality 
-            // Could open a modal with pre-filled item details
-            alert(`Editing item: ${item.name}`);
+    deleteItem(id) {
+        // Confirm deletion
+        if (confirm('Are you sure you want to delete this item?')) {
+            this.inventory = this.inventory.filter(item => item.id !== id);
+            this.saveInventoryToLocalStorage();
+            this.renderInventory();
         }
     }
 
-    deleteItem(id) {
-        this.inventory = this.inventory.filter(item => item.id !== id);
-        this.saveInventoryToLocalStorage();
-        this.renderInventory();
+    resetInventory() {
+        // Confirm reset
+        if (confirm('Are you sure you want to reset the entire inventory? This will delete all items.')) {
+            this.inventory = [];
+            this.saveInventoryToLocalStorage();
+            this.renderInventory();
+        }
     }
 
     saveInventoryToLocalStorage() {
@@ -120,70 +195,10 @@ class InventorySystem {
             this.renderInventory();
         }
     }
-
-    toggleChatbot() {
-        const chatbotPanel = document.getElementById('chatbotPanel');
-        chatbotPanel.classList.toggle('hidden');
-    }
-
-    sendChatMessage() {
-        const chatInput = document.getElementById('chatInput');
-        const chatMessages = document.getElementById('chatMessages');
-        const message = chatInput.value.trim();
-
-        if (message) {
-            // Add user message
-            this.addChatMessage('user', message);
-
-            // Process and respond
-            const response = this.processChatbotMessage(message);
-
-            // Add chatbot response
-            setTimeout(() => {
-                this.addChatMessage('chatbot', response);
-            }, 500);
-
-            // Clear input
-            chatInput.value = '';
-        }
-    }
-
-    addChatMessage(sender, message) {
-        const chatMessages = document.getElementById('chatMessages');
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('chat-message', sender);
-        messageElement.textContent = message;
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    processChatbotMessage(message) {
-        const lowerMessage = message.toLowerCase();
-        const keywords = {
-            'help': 'I can help you with inventory management. You can add, edit, or delete items.',
-            'add item': 'Click the "Add New Item" button to add a new product to your inventory.',
-            'total items': `You currently have ${this.inventory.length} items in your inventory.`,
-            'total value': `Total inventory value: $${this.calculateTotalInventoryValue().toFixed(2)}`,
-            'how many': 'I can help you count items or provide inventory statistics.',
-            'delete': 'You can delete items by clicking the delete button next to each item.'
-        };
-
-        for (const [keyword, response] of Object.entries(keywords)) {
-            if (lowerMessage.includes(keyword)) {
-                return response;
-            }
-        }
-
-        return "I'm not sure I understand. Could you rephrase your question about the inventory system?";
-    }
-
-    calculateTotalInventoryValue() {
-        return this.inventory.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
 }
 
-// Initialize the inventory system
-const inventorySystem = new InventorySystem();
+// Initialize the inventory manager
+const inventoryManager = new InventoryManager();
 
-// Expose the instance globally for event handlers
-window.inventorySystem = inventorySystem;
+// Expose to global scope for event handlers
+window.inventoryManager = inventoryManager;
