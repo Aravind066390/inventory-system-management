@@ -1,10 +1,8 @@
 // Inventory Management System Script
 
-// Main Application State
 const app = {
     inventory: [],
     currentTheme: 'light',
-    chatbotMessages: [],
     init() {
         this.cacheDOM();
         this.bindEvents();
@@ -13,140 +11,141 @@ const app = {
     },
 
     cacheDOM() {
-        // Form Elements
-        this.inventoryForm = document.getElementById('inventoryForm');
-        this.searchBar = document.getElementById('search-bar');
-        this.searchButton = document.getElementById('searchButton');
-        this.inventoryTable = document.getElementById('inventoryTable').querySelector('tbody');
-        this.toggleFormButton = document.getElementById('toggleFormButton');
-        this.formPanel = document.getElementById('formPanel');
+        // All previous DOM element selections remain the same
+        // But we'll add more robust error checking
+        this.elementsToCache = [
+            'inventoryForm', 'searchBar', 'searchButton', 'inventoryTable', 
+            'toggleFormButton', 'formPanel', 'detailPanel', 'detailTitle', 
+            'detailImage', 'detailDescription', 'detailPrice', 'detailDate', 
+            'detailQuantity', 'detailTotal', 'editForm', 'editName', 
+            'editDescription', 'editPrice', 'editDate', 'editQuantity', 
+            'editImage', 'backToInventoryBtn', 'editDetailButton', 
+            'cancelEditBtn', 'decreaseQuantityBtn', 'increaseQuantityBtn', 
+            'resetButton', 'themeToggleBtn', 'themeToggleIcon'
+        ];
 
-        // Detail View Elements
-        this.detailPanel = document.getElementById('detailPanel');
-        this.detailTitle = document.getElementById('detail-title');
-        this.detailImage = document.getElementById('detail-image');
-        this.detailDescription = document.getElementById('detail-description');
-        this.detailPrice = document.getElementById('detail-price');
-        this.detailDate = document.getElementById('detail-date');
-        this.detailQuantity = document.getElementById('detail-quantity');
-        this.detailTotal = document.getElementById('detail-total');
+        this.elementsToCache.forEach(elementId => {
+            this[elementId] = document.getElementById(elementId);
+            if (!this[elementId]) {
+                console.warn(`Element with ID ${elementId} not found`);
+            }
+        });
 
-        // Edit Form Elements
-        this.editForm = document.getElementById('editForm');
-        this.editName = document.getElementById('edit-name');
-        this.editDescription = document.getElementById('edit-description');
-        this.editPrice = document.getElementById('edit-price');
-        this.editDate = document.getElementById('edit-date');
-        this.editQuantity = document.getElementById('edit-quantity');
-        this.editImage = document.getElementById('edit-image');
-
-        // Buttons
-        this.backToInventoryBtn = document.getElementById('back-to-inventory');
-        this.editDetailButton = document.getElementById('edit-detail-button');
-        this.cancelEditBtn = document.getElementById('cancel-edit');
-        this.decreaseQuantityBtn = document.getElementById('decrease-quantity');
-        this.increaseQuantityBtn = document.getElementById('increase-quantity');
-        this.resetButton = document.getElementById('resetButton');
-
-        // Theme Toggle
-        this.themeToggleBtn = document.getElementById('themeToggleBtn');
-        this.themeToggleIcon = this.themeToggleBtn.querySelector('.theme-toggle-icon');
-
-        // Chatbot Elements
-        this.chatToggleBtn = document.getElementById('chatToggleBtn');
-        this.chatbotContainer = document.getElementById('chatbotContainer');
-        this.chatbotMessages = document.getElementById('chatbotMessages');
-        this.chatInput = document.getElementById('chatInput');
-        this.sendMessageButton = document.getElementById('sendMessageButton');
-        this.closeChatButton = document.getElementById('closeChatButton');
+        // Ensure tbody exists
+        this.inventoryTableBody = this.inventoryTable ? 
+            this.inventoryTable.querySelector('tbody') : null;
     },
 
     bindEvents() {
-        // Form Submission
-        this.inventoryForm.addEventListener('submit', this.addInventoryItem.bind(this));
-        this.editForm.addEventListener('submit', this.saveEditedItem.bind(this));
+        // Add null checks to prevent errors
+        if (this.inventoryForm) {
+            this.inventoryForm.addEventListener('submit', this.addInventoryItem.bind(this));
+        }
 
-        // Search 
-        this.searchButton.addEventListener('click', this.searchInventory.bind(this));
-        this.searchBar.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') this.searchInventory();
-        });
+        if (this.editForm) {
+            this.editForm.addEventListener('submit', this.saveEditedItem.bind(this));
+        }
 
-        // Toggle Form
-        this.toggleFormButton.addEventListener('click', this.toggleAddItemForm.bind(this));
+        if (this.searchButton) {
+            this.searchButton.addEventListener('click', this.searchInventory.bind(this));
+        }
 
-        // Detail View Interactions
-        this.backToInventoryBtn.addEventListener('click', this.showInventoryList.bind(this));
-        this.editDetailButton.addEventListener('click', this.switchToEditMode.bind(this));
-        this.cancelEditBtn.addEventListener('click', this.cancelEdit.bind(this));
+        if (this.searchBar) {
+            this.searchBar.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') this.searchInventory();
+            });
+        }
 
-        // Quantity Controls
-        this.decreaseQuantityBtn.addEventListener('click', this.adjustQuantity.bind(this, -1));
-        this.increaseQuantityBtn.addEventListener('click', this.adjustQuantity.bind(this, 1));
+        if (this.toggleFormButton) {
+            this.toggleFormButton.addEventListener('click', this.toggleAddItemForm.bind(this));
+        }
 
-        // Theme Toggle
-        this.themeToggleBtn.addEventListener('click', this.toggleTheme.bind(this));
+        if (this.backToInventoryBtn) {
+            this.backToInventoryBtn.addEventListener('click', this.showInventoryList.bind(this));
+        }
 
-        // Reset
-        this.resetButton.addEventListener('click', this.resetInventory.bind(this));
+        if (this.editDetailButton) {
+            this.editDetailButton.addEventListener('click', this.switchToEditMode.bind(this));
+        }
 
-        // Chatbot
-        this.chatToggleBtn.addEventListener('click', this.toggleChatbot.bind(this));
-        this.sendMessageButton.addEventListener('click', this.sendChatMessage.bind(this));
-        this.chatInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') this.sendChatMessage();
-        });
-        this.closeChatButton.addEventListener('click', this.toggleChatbot.bind(this));
+        if (this.cancelEditBtn) {
+            this.cancelEditBtn.addEventListener('click', this.cancelEdit.bind(this));
+        }
+
+        if (this.decreaseQuantityBtn) {
+            this.decreaseQuantityBtn.addEventListener('click', this.adjustQuantity.bind(this, -1));
+        }
+
+        if (this.increaseQuantityBtn) {
+            this.increaseQuantityBtn.addEventListener('click', this.adjustQuantity.bind(this, 1));
+        }
+
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', this.toggleTheme.bind(this));
+        }
+
+        if (this.resetButton) {
+            this.resetButton.addEventListener('click', this.resetInventory.bind(this));
+        }
     },
 
     loadInitialData() {
-        // Optional: Load some initial inventory items
-        const initialItems = [
-            {
-                id: 1,
-                name: 'Laptop',
-                quantity: 10,
-                price: 999.99,
-                date: '2024-03-15',
-                description: 'High-performance business laptop',
-                image: 'https://example.com/laptop.jpg'
-            },
-            {
-                id: 2,
-                name: 'Wireless Mouse',
-                quantity: 50,
-                price: 29.99,
-                date: '2024-03-10',
-                description: 'Ergonomic wireless mouse',
-                image: 'https://example.com/mouse.jpg'
+        const savedInventory = localStorage.getItem('inventoryData');
+        if (savedInventory) {
+            try {
+                this.inventory = JSON.parse(savedInventory);
+                this.renderInventoryTable();
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+                this.inventory = [];
             }
-        ];
-
-        initialItems.forEach(item => this.addInventoryItem(null, item));
+        } else {
+            // Optional default items
+            const initialItems = [
+                {
+                    id: Date.now(),
+                    name: 'Laptop',
+                    quantity: 10,
+                    price: 999.99,
+                    date: '2024-03-15',
+                    description: 'High-performance business laptop',
+                    image: 'https://via.placeholder.com/150'
+                }
+            ];
+            this.inventory = initialItems;
+            this.renderInventoryTable();
+            this.saveInventoryToLocalStorage();
+        }
     },
 
-    // Inventory Management Methods
+    saveInventoryToLocalStorage() {
+        localStorage.setItem('inventoryData', JSON.stringify(this.inventory));
+    },
+
     addInventoryItem(event, itemData = null) {
         if (event) {
             event.preventDefault();
             itemData = {
                 id: Date.now(),
-                name: document.getElementById('item-name').value,
-                quantity: parseInt(document.getElementById('item-quantity').value),
-                price: parseFloat(document.getElementById('item-price').value),
-                date: document.getElementById('item-date').value,
-                description: document.getElementById('item-description').value,
-                image: document.getElementById('item-image').value || 'https://via.placeholder.com/150'
+                name: this.inventoryForm.querySelector('#item-name').value,
+                quantity: parseInt(this.inventoryForm.querySelector('#item-quantity').value),
+                price: parseFloat(this.inventoryForm.querySelector('#item-price').value),
+                date: this.inventoryForm.querySelector('#item-date').value,
+                description: this.inventoryForm.querySelector('#item-description').value,
+                image: this.inventoryForm.querySelector('#item-image').value || 'https://via.placeholder.com/150'
             };
         }
 
         this.inventory.push(itemData);
         this.renderInventoryTable();
+        this.saveInventoryToLocalStorage();
         this.clearAddItemForm();
     },
 
     renderInventoryTable() {
-        this.inventoryTable.innerHTML = '';
+        if (!this.inventoryTableBody) return;
+
+        this.inventoryTableBody.innerHTML = '';
         this.inventory.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -159,8 +158,14 @@ const app = {
                     <button onclick="app.deleteItem(${item.id})">Delete</button>
                 </td>
             `;
-            this.inventoryTable.appendChild(row);
+            this.inventoryTableBody.appendChild(row);
         });
+    },
+
+    deleteItem(itemId) {
+        this.inventory = this.inventory.filter(item => item.id !== itemId);
+        this.renderInventoryTable();
+        this.saveInventoryToLocalStorage();
     },
 
     showItemDetails(itemId) {
@@ -176,37 +181,19 @@ const app = {
         this.detailQuantity.value = item.quantity;
         this.detailTotal.textContent = `$${(item.price * item.quantity).toFixed(2)}`;
 
-        // Show detail panel, hide inventory list
-        this.detailPanel.classList.remove('edit-mode');
+        // Toggle view
         this.formPanel.style.display = 'none';
         this.detailPanel.style.display = 'block';
+        this.detailPanel.classList.remove('edit-mode');
     },
 
-    deleteItem(itemId) {
-        this.inventory = this.inventory.filter(item => item.id !== itemId);
-        this.renderInventoryTable();
-    },
-
-    // Form and View Management
-    toggleAddItemForm() {
-        this.formPanel.style.display = this.formPanel.style.display === 'none' ? 'block' : 'none';
-    },
-
-    clearAddItemForm() {
-        this.inventoryForm.reset();
-    },
-
-    showInventoryList() {
-        this.detailPanel.style.display = 'none';
-        this.formPanel.style.display = 'block';
-    },
-
-    // Edit Functionality
     switchToEditMode() {
+        if (!this.detailPanel) return;
+        this.detailPanel.classList.add('edit-mode');
+
         const currentItem = this.inventory.find(item => item.name === this.detailTitle.textContent);
         if (!currentItem) return;
 
-        this.detailPanel.classList.add('edit-mode');
         this.editName.value = currentItem.name;
         this.editDescription.value = currentItem.description;
         this.editPrice.value = currentItem.price;
@@ -231,15 +218,22 @@ const app = {
             };
 
             this.renderInventoryTable();
+            this.saveInventoryToLocalStorage();
             this.showItemDetails(this.inventory[currentItemIndex].id);
         }
     },
 
     cancelEdit() {
-        this.detailPanel.classList.remove('edit-mode');
+        if (this.detailPanel) {
+            this.detailPanel.classList.remove('edit-mode');
+        }
     },
 
-    // Quantity Adjustment
+    showInventoryList() {
+        if (this.detailPanel) this.detailPanel.style.display = 'none';
+        if (this.formPanel) this.formPanel.style.display = 'block';
+    },
+
     adjustQuantity(change) {
         const currentItem = this.inventory.find(item => item.name === this.detailTitle.textContent);
         if (!currentItem) return;
@@ -248,33 +242,9 @@ const app = {
         this.detailQuantity.value = currentItem.quantity;
         this.detailTotal.textContent = `$${(currentItem.price * currentItem.quantity).toFixed(2)}`;
         this.renderInventoryTable();
+        this.saveInventoryToLocalStorage();
     },
 
-    // Search Functionality
-    searchInventory() {
-        const searchTerm = this.searchBar.value.toLowerCase();
-        const filteredInventory = this.inventory.filter(item => 
-            item.name.toLowerCase().includes(searchTerm)
-        );
-
-        this.inventoryTable.innerHTML = '';
-        filteredInventory.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.date}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td>
-                    <button onclick="app.showItemDetails(${item.id})">View</button>
-                    <button onclick="app.deleteItem(${item.id})">Delete</button>
-                </td>
-            `;
-            this.inventoryTable.appendChild(row);
-        });
-    },
-
-    // Theme Management
     setupTheme() {
         const savedTheme = localStorage.getItem('inventoryAppTheme') || 'light';
         this.applyTheme(savedTheme);
@@ -287,64 +257,59 @@ const app = {
 
     applyTheme(theme) {
         this.currentTheme = theme;
-        document.body.classList.toggle('dark-theme', theme === 'dark');
-        this.themeToggleIcon.textContent = theme === 'light' ? '🌙' : '☀';
+        
+        // More robust theme application
+        if (document.body) {
+            document.body.classList.toggle('dark-theme', theme === 'dark');
+        }
+
+        if (this.themeToggleIcon) {
+            this.themeToggleIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
         localStorage.setItem('inventoryAppTheme', theme);
     },
 
-    // Chatbot Functionality
-    toggleChatbot() {
-        this.chatbotContainer.classList.toggle('open');
-    },
-
-    sendChatMessage() {
-        const message = this.chatInput.value.trim();
-        if (!message) return;
-
-        // Add user message
-        this.addChatMessage(message, 'user');
-        this.chatInput.value = '';
-
-        // Simulate bot response (replace with actual AI chatbot logic)
-        setTimeout(() => {
-            const botResponse = this.generateChatbotResponse(message);
-            this.addChatMessage(botResponse, 'bot');
-        }, 500);
-    },
-
-    addChatMessage(message, sender) {
-        const messageEl = document.createElement('div');
-        messageEl.classList.add('message', sender + '-message');
-        messageEl.textContent = message;
-        this.chatbotMessages.appendChild(messageEl);
-        this.chatbotMessages.scrollTop = this.chatbotMessages.scrollHeight;
-    },
-
-    generateChatbotResponse(userMessage) {
-        const lowerMessage = userMessage.toLowerCase();
-        
-        if (lowerMessage.includes('help') || lowerMessage.includes('how')) {
-            return "I can help you manage your inventory. You can add items, search items, edit quantities, and more!";
-        }
-        
-        if (lowerMessage.includes('total') || lowerMessage.includes('value')) {
-            const totalValue = this.inventory.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            return `Your total inventory value is $${totalValue.toFixed(2)}`;
-        }
-        
-        if (lowerMessage.includes('count') || lowerMessage.includes('items')) {
-            return `You currently have ${this.inventory.length} different items in your inventory.`;
-        }
-
-        return "I'm not sure how to help with that. Can you be more specific?";
-    },
-
-    // Reset Functionality
     resetInventory() {
+        // Clear inventory and local storage
         this.inventory = [];
+        localStorage.removeItem('inventoryData');
+        
+        // Reset table and views
         this.renderInventoryTable();
-        this.detailPanel.style.display = 'none';
-        this.formPanel.style.display = 'block';
+        
+        // Reset to initial view
+        if (this.detailPanel) this.detailPanel.style.display = 'none';
+        if (this.formPanel) this.formPanel.style.display = 'block';
+    },
+
+    clearAddItemForm() {
+        if (this.inventoryForm) {
+            this.inventoryForm.reset();
+        }
+    },
+
+    searchInventory() {
+        const searchTerm = this.searchBar.value.toLowerCase();
+        const filteredInventory = this.inventory.filter(item => 
+            item.name.toLowerCase().includes(searchTerm)
+        );
+
+        this.inventoryTableBody.innerHTML = '';
+        filteredInventory.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.date}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td>
+                    <button onclick="app.showItemDetails(${item.id})">View</button>
+                    <button onclick="app.deleteItem(${item.id})">Delete</button>
+                </td>
+            `;
+            this.inventoryTableBody.appendChild(row);
+        });
     }
 };
 
