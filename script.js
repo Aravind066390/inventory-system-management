@@ -1,196 +1,182 @@
-document.addEventListener('DOMContentLoaded', function() {
-    class InventorySystem {
-        constructor() {
-            this.inventory = [];
-            this.initializeEventListeners();
-        }
+// Inventory Management System JavaScript
 
-        initializeEventListeners() {
-            // Add Item Modal
-            const addItemBtn = document.getElementById('addItemBtn');
-            const closeModalBtn = document.querySelector('.close');
-            const addItemForm = document.getElementById('addItemForm');
+// Inventory Items Storage
+let inventoryItems = [];
 
-            if (addItemBtn) {
-                addItemBtn.addEventListener('click', () => this.openAddItemModal());
-            }
+// DOM Elements
+const addItemBtn = document.getElementById('add-item-btn');
+const addItemModal = document.getElementById('add-item-modal');
+const closeModalBtn = document.querySelector('.close-btn');
+const addItemForm = document.getElementById('add-item-form');
+const inventoryList = document.getElementById('inventory-list');
 
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => this.closeAddItemModal());
-            }
+// Chatbot Elements
+const chatbotIcon = document.getElementById('chatbot-icon');
+const chatbotPanel = document.getElementById('chatbot-panel');
+const closeChatbotBtn = document.getElementById('close-chatbot');
+const userInput = document.getElementById('user-input');
+const sendMessageBtn = document.getElementById('send-message');
+const chatbotMessages = document.getElementById('chatbot-messages');
 
-            if (addItemForm) {
-                addItemForm.addEventListener('submit', (e) => this.addItem(e));
-            }
+// Event Listeners
+addItemBtn.addEventListener('click', () => {
+    addItemModal.style.display = 'block';
+});
 
-            // Chatbot
-            const chatbotButton = document.getElementById('chatbotButton');
-            const closeChatbot = document.getElementById('closeChatbot');
-            const sendMessageBtn = document.getElementById('sendMessage');
-            const userInput = document.getElementById('userInput');
+closeModalBtn.addEventListener('click', () => {
+    addItemModal.style.display = 'none';
+});
 
-            if (chatbotButton) {
-                chatbotButton.addEventListener('click', () => this.toggleChatbot());
-            }
+addItemForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    addNewItem();
+});
 
-            if (closeChatbot) {
-                closeChatbot.addEventListener('click', () => this.toggleChatbot());
-            }
+// Chatbot Icon and Panel
+chatbotIcon.addEventListener('click', () => {
+    chatbotPanel.style.display = 'flex';
+});
 
-            if (sendMessageBtn) {
-                sendMessageBtn.addEventListener('click', () => this.handleChatbotMessage());
-            }
+closeChatbotBtn.addEventListener('click', () => {
+    chatbotPanel.style.display = 'none';
+});
 
-            if (userInput) {
-                userInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.handleChatbotMessage();
-                });
-            }
-        }
+sendMessageBtn.addEventListener('click', handleChatbotMessage);
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        handleChatbotMessage();
+    }
+});
 
-        openAddItemModal() {
-            const modal = document.getElementById('addItemModal');
-            if (modal) modal.style.display = 'block';
-        }
+// Add New Item Function
+function addNewItem() {
+    const itemName = document.getElementById('item-name').value;
+    const itemDate = document.getElementById('item-date').value;
+    const itemPrice = parseFloat(document.getElementById('item-price').value);
+    const itemQuantity = parseInt(document.getElementById('item-quantity').value);
+    const itemImageInput = document.getElementById('item-image');
 
-        closeAddItemModal() {
-            const modal = document.getElementById('addItemModal');
-            if (modal) modal.style.display = 'none';
-        }
+    // Read image file
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const newItem = {
+            id: Date.now(),
+            name: itemName,
+            date: itemDate,
+            price: itemPrice,
+            quantity: itemQuantity,
+            image: event.target.result
+        };
 
-        addItem(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('itemName').value;
-            const date = document.getElementById('itemDate').value;
-            const price = document.getElementById('itemPrice').value;
-            const quantity = document.getElementById('itemQuantity').value;
-            const imageInput = document.getElementById('itemImage');
-            
-            let imageUrl = 'https://via.placeholder.com/100';
-            if (imageInput.files && imageInput.files[0]) {
-                imageUrl = URL.createObjectURL(imageInput.files[0]);
-            }
+        inventoryItems.push(newItem);
+        renderInventoryList();
+        addItemModal.style.display = 'none';
+        addItemForm.reset();
+    };
 
-            const item = {
-                id: Date.now(),
-                name,
-                date,
-                price,
-                quantity,
-                imageUrl
-            };
+    if (itemImageInput.files.length > 0) {
+        reader.readAsDataURL(itemImageInput.files[0]);
+    } else {
+        const newItem = {
+            id: Date.now(),
+            name: itemName,
+            date: itemDate,
+            price: itemPrice,
+            quantity: itemQuantity,
+            image: null
+        };
 
-            this.inventory.push(item);
-            this.renderInventory();
-            this.closeAddItemModal();
-            this.resetAddItemForm();
-        }
+        inventoryItems.push(newItem);
+        renderInventoryList();
+        addItemModal.style.display = 'none';
+        addItemForm.reset();
+    }
+}
 
-        renderInventory() {
-            const inventoryBody = document.getElementById('inventoryBody');
-            if (!inventoryBody) return;
-
-            inventoryBody.innerHTML = '';
-
-            this.inventory.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><img src="${item.imageUrl}" alt="${item.name}" width="50" height="50"></td>
-                    <td>${item.name}</td>
-                    <td>${item.date}</td>
-                    <td>$${parseFloat(item.price).toFixed(2)}</td>
-                    <td>${item.quantity}</td>
-                    <td>
-                        <button onclick="inventorySystem.editItem(${item.id})">Edit</button>
-                        <button onclick="inventorySystem.deleteItem(${item.id})">Delete</button>
-                    </td>
-                `;
-                inventoryBody.appendChild(row);
-            });
-        }
-
-        editItem(id) {
-            const item = this.inventory.find(i => i.id === id);
-            if (item) {
-                this.openAddItemModal();
-                document.getElementById('itemName').value = item.name;
-                document.getElementById('itemDate').value = item.date;
-                document.getElementById('itemPrice').value = item.price;
-                document.getElementById('itemQuantity').value = item.quantity;
-                
-                // Remove the existing item
-                this.inventory = this.inventory.filter(i => i.id !== id);
-            }
-        }
-
-        deleteItem(id) {
-            this.inventory = this.inventory.filter(item => item.id !== id);
-            this.renderInventory();
-        }
-
-        resetAddItemForm() {
-            const form = document.getElementById('addItemForm');
-            if (form) form.reset();
-        }
-
-        toggleChatbot() {
-            const chatbotPanel = document.getElementById('chatbotPanel');
-            if (chatbotPanel) {
-                chatbotPanel.style.display = chatbotPanel.style.display === 'block' ? 'none' : 'block';
-            }
-        }
-
-        handleChatbotMessage() {
-            const userInput = document.getElementById('userInput');
-            const chatMessages = document.getElementById('chatMessages');
-            
-            if (!userInput || !chatMessages) return;
-
-            const message = userInput.value.trim();
-
-            if (message) {
-                // User message
-                const userMessageEl = document.createElement('div');
-                userMessageEl.classList.add('user-message');
-                userMessageEl.textContent = message;
-                chatMessages.appendChild(userMessageEl);
-
-                // Chatbot response
-                const botMessageEl = document.createElement('div');
-                botMessageEl.classList.add('bot-message');
-                
-                // Simple keyword-based responses
-                const responses = {
-                    'help': 'I can help you with inventory management. Ask about adding items, viewing inventory, or specific item details.',
-                    'add item': 'Click the "Add Item" button to add a new item to the inventory.',
-                    'edit': 'You can edit an item by clicking the "Edit" button next to each item in the inventory table.',
-                    'delete': 'To delete an item, click the "Delete" button next to the item you want to remove.',
-                    'inventory': `Current inventory has ${this.inventory.length} items.`
-                };
-
-                const lowercaseMessage = message.toLowerCase();
-                let response = 'I\'m not sure I understand. Try asking about inventory help, adding items, or editing items.';
-
-                for (const [keyword, botResponse] of Object.entries(responses)) {
-                    if (lowercaseMessage.includes(keyword)) {
-                        response = botResponse;
-                        break;
-                    }
+// Render Inventory List
+function renderInventoryList() {
+    inventoryList.innerHTML = '';
+    inventoryItems.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                ${item.image ? 
+                    `<img src="${item.image}" alt="${item.name}" class="item-image">` : 
+                    'No Image'
                 }
+            </td>
+            <td>${item.name}</td>
+            <td>${item.date}</td>
+            <td>$${item.price.toFixed(2)}</td>
+            <td>${item.quantity}</td>
+            <td>
+                <button onclick="editItem(${item.id})" class="primary-btn">Edit</button>
+                <button onclick="deleteItem(${item.id})" class="primary-btn" style="background-color: #e74c3c;">Delete</button>
+            </td>
+        `;
+        inventoryList.appendChild(row);
+    });
+}
 
-                botMessageEl.textContent = response;
-                chatMessages.appendChild(botMessageEl);
+// Edit Item Function
+function editItem(id) {
+    const item = inventoryItems.find(i => i.id === id);
+    if (item) {
+        // Populate form with existing item details
+        document.getElementById('item-name').value = item.name;
+        document.getElementById('item-date').value = item.date;
+        document.getElementById('item-price').value = item.price;
+        document.getElementById('item-quantity').value = item.quantity;
+        
+        // Remove the existing item
+        inventoryItems = inventoryItems.filter(i => i.id !== id);
+        
+        // Show modal
+        addItemModal.style.display = 'block';
+    }
+}
 
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+// Delete Item Function
+function deleteItem(id) {
+    inventoryItems = inventoryItems.filter(item => item.id !== id);
+    renderInventoryList();
+}
 
-                // Clear input
-                userInput.value = '';
-            }
+// Chatbot Functionality
+const chatbotResponses = {
+    inventory: "This is an inventory management system where you can add, edit, and delete items.",
+    add: "To add an item, click the 'Add New Item' button and fill out the form with item details.",
+    edit: "You can edit an item by clicking the 'Edit' button next to the item in the list.",
+    delete: "To remove an item, click the 'Delete' button next to the item you want to remove.",
+    help: "I can help you with adding, editing, or deleting inventory items. What would you like to know?"
+};
+
+function handleChatbotMessage() {
+    const userMessage = userInput.value.toLowerCase().trim();
+    const messageElement = document.createElement('div');
+    
+    // User message
+    messageElement.innerHTML = `<strong>You:</strong> ${userInput.value}`;
+    chatbotMessages.appendChild(messageElement);
+
+    // Find appropriate response
+    let botResponse = "I'm not sure about that. Try asking about inventory, add, edit, or delete.";
+    for (let key in chatbotResponses) {
+        if (userMessage.includes(key)) {
+            botResponse = chatbotResponses[key];
+            break;
         }
     }
 
-    // Initialize the inventory system
-    window.inventorySystem = new InventorySystem();
-});
+    // Bot response
+    const botMessageElement = document.createElement('div');
+    botMessageElement.innerHTML = `<strong>Inventory Assistant:</strong> ${botResponse}`;
+    chatbotMessages.appendChild(botMessageElement);
+
+    // Clear input and scroll to bottom
+    userInput.value = '';
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+// Initialize the inventory list
+renderInventoryList();
