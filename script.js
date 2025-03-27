@@ -1,78 +1,77 @@
 class InventoryManager {
     constructor() {
         this.inventory = [];
-        this.initEventListeners();
-        this.loadInventoryFromLocalStorage();
+        this.initElements();
+        this.bindEvents();
+        this.loadInventory();
     }
 
-    initEventListeners() {
-        // Add Item Button
-        document.getElementById('addItemBtn').addEventListener('click', () => this.openModal());
+    initElements() {
+        // Modal and Form Elements
+        this.modal = document.getElementById('itemModal');
+        this.addItemBtn = document.getElementById('addItemBtn');
+        this.closeBtn = document.querySelector('.close-btn');
+        this.cancelBtn = document.getElementById('cancelBtn');
+        this.itemForm = document.getElementById('itemForm');
+        this.inventoryContainer = document.getElementById('inventoryContainer');
+        this.imageInput = document.getElementById('itemImage');
+        this.imagePreview = document.getElementById('imagePreview');
 
-        // Close Modal Button
-        document.querySelector('.close-btn').addEventListener('click', () => this.closeModal());
-
-        // Form Submission
-        document.getElementById('itemForm').addEventListener('submit', (e) => this.saveItem(e));
-
-        // Image Upload Preview
-        document.getElementById('itemImage').addEventListener('change', (e) => this.previewImage(e));
-
-        // Reset Button
-        document.getElementById('resetBtn').addEventListener('click', () => this.resetInventory());
+        // Form Fields
+        this.itemIdField = document.getElementById('itemId');
+        this.itemNameField = document.getElementById('itemName');
+        this.itemDateField = document.getElementById('itemDate');
+        this.itemQuantityField = document.getElementById('itemQuantity');
+        this.itemPriceField = document.getElementById('itemPrice');
+        this.itemDescriptionField = document.getElementById('itemDescription');
     }
 
-    openModal(item = null) {
-        const modal = document.getElementById('itemModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const saveBtn = document.getElementById('saveItemBtn');
+    bindEvents() {
+        this.addItemBtn.addEventListener('click', () => this.openAddItemModal());
+        this.closeBtn.addEventListener('click', () => this.closeModal());
+        this.cancelBtn.addEventListener('click', () => this.closeModal());
+        this.itemForm.addEventListener('submit', (e) => this.saveItem(e));
+        this.imageInput.addEventListener('change', (e) => this.previewImage(e));
+    }
 
+    openAddItemModal(item = null) {
         // Reset form
-        document.getElementById('itemForm').reset();
-        document.getElementById('imagePreview').innerHTML = '';
+        this.itemForm.reset();
+        this.imagePreview.innerHTML = '';
 
         if (item) {
             // Edit mode
-            modalTitle.textContent = 'Edit Item';
-            saveBtn.textContent = 'Update Item';
-            
-            // Populate form with existing item data
-            document.getElementById('itemId').value = item.id;
-            document.getElementById('itemName').value = item.name;
-            document.getElementById('itemDate').value = item.date;
-            document.getElementById('itemQuantity').value = item.quantity;
-            document.getElementById('itemDescription').value = item.description || '';
-            
-            // Show existing image if available
-            if (item.imageUrl) {
-                const previewImg = document.createElement('img');
-                previewImg.src = item.imageUrl;
-                document.getElementById('imagePreview').appendChild(previewImg);
+            this.itemIdField.value = item.id;
+            this.itemNameField.value = item.name;
+            this.itemDateField.value = item.date;
+            this.itemQuantityField.value = item.quantity;
+            this.itemPriceField.value = item.price;
+            this.itemDescriptionField.value = item.description;
+
+            if (item.image) {
+                const img = document.createElement('img');
+                img.src = item.image;
+                this.imagePreview.appendChild(img);
             }
-        } else {
-            // Add mode
-            modalTitle.textContent = 'Add New Item';
-            saveBtn.textContent = 'Save Item';
         }
 
-        modal.style.display = 'block';
+        this.modal.style.display = 'block';
     }
 
     closeModal() {
-        document.getElementById('itemModal').style.display = 'none';
+        this.modal.style.display = 'none';
     }
 
     previewImage(event) {
         const file = event.target.files[0];
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = ''; // Clear previous preview
+        this.imagePreview.innerHTML = '';
 
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                preview.appendChild(img);
+                this.imagePreview.appendChild(img);
             };
             reader.readAsDataURL(file);
         }
@@ -81,119 +80,123 @@ class InventoryManager {
     saveItem(e) {
         e.preventDefault();
 
-        // Collect form data
-        const id = document.getElementById('itemId').value || Date.now().toString();
-        const name = document.getElementById('itemName').value;
-        const date = document.getElementById('itemDate').value;
-        const quantity = document.getElementById('itemQuantity').value;
-        const description = document.getElementById('itemDescription').value;
-        const imageFile = document.getElementById('itemImage').files[0];
+        // Validate inputs
+        if (!this.validateForm()) return;
 
-        // Existing item or new item
-        const existingItemIndex = this.inventory.findIndex(item => item.id === id);
-
-        // Create item object
         const item = {
-            id,
-            name,
-            date,
-            quantity,
-            description,
-            imageUrl: null
+            id: this.itemIdField.value || Date.now().toString(),
+            name: this.itemNameField.value,
+            date: this.itemDateField.value,
+            quantity: parseInt(this.itemQuantityField.value),
+            price: parseFloat(this.itemPriceField.value),
+            description: this.itemDescriptionField.value,
+            image: this.imagePreview.querySelector('img')?.src || null
         };
 
-        // Handle image upload
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                item.imageUrl = event.target.result;
-                
-                if (existingItemIndex !== -1) {
-                    // Update existing item
-                    this.inventory[existingItemIndex] = item;
-                } else {
-                    // Add new item
-                    this.inventory.push(item);
-                }
+        // Remove existing item if editing
+        this.inventory = this.inventory.filter(i => i.id !== item.id);
+        
+        // Add new/updated item
+        this.inventory.push(item);
 
-                this.saveInventoryToLocalStorage();
-                this.renderInventory();
-                this.closeModal();
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            // If no new image, use existing image or keep it null
-            if (existingItemIndex !== -1) {
-                item.imageUrl = this.inventory[existingItemIndex].imageUrl;
-                this.inventory[existingItemIndex] = item;
+        // Save and render
+        this.saveInventory();
+        this.renderInventory();
+        this.closeModal();
+        this.showNotification('Item saved successfully!');
+    }
+
+    validateForm() {
+        const requiredFields = [
+            this.itemNameField,
+            this.itemDateField,
+            this.itemQuantityField,
+            this.itemPriceField
+        ];
+
+        let isValid = true;
+        requiredFields.forEach(field => {
+            if (!field.value) {
+                field.classList.add('error');
+                isValid = false;
             } else {
-                this.inventory.push(item);
+                field.classList.remove('error');
             }
+        });
 
-            this.saveInventoryToLocalStorage();
-            this.renderInventory();
-            this.closeModal();
-        }
+        return isValid;
     }
 
     renderInventory() {
-        const grid = document.getElementById('inventoryGrid');
-        grid.innerHTML = ''; // Clear existing items
+        this.inventoryContainer.innerHTML = '';
 
         this.inventory.forEach(item => {
             const itemCard = document.createElement('div');
             itemCard.classList.add('inventory-item');
-            
             itemCard.innerHTML = `
-                ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}">` : ''}
-                <div class="item-details">
-                    <h3>${item.name}</h3>
-                    <p>Date: ${item.date}</p>
-                    <p>Quantity: ${item.quantity}</p>
-                    ${item.description ? `<p>Description: ${item.description}</p>` : ''}
-                </div>
+                ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+                <h3>${item.name}</h3>
+                <p>Date: ${item.date}</p>
+                <p>Quantity: ${item.quantity}</p>
+                <p>Price: $${item.price.toFixed(2)}</p>
+                ${item.description ? `<p>Description: ${item.description}</p>` : ''}
                 <div class="item-actions">
-                    <button onclick="inventoryManager.openModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button onclick="inventoryManager.deleteItem('${item.id}')">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
+                    <button onclick="inventoryManager.editItem('${item.id}')">Edit</button>
+                    <button onclick="inventoryManager.deleteItem('${item.id}')">Delete</button>
                 </div>
             `;
-
-            grid.appendChild(itemCard);
+            this.inventoryContainer.appendChild(itemCard);
         });
     }
 
+    editItem(id) {
+        const item = this.inventory.find(i => i.id === id);
+        if (item) {
+            this.openAddItemModal(item);
+        }
+    }
+
     deleteItem(id) {
-        // Confirm deletion
         if (confirm('Are you sure you want to delete this item?')) {
-            this.inventory = this.inventory.filter(item => item.id !== id);
-            this.saveInventoryToLocalStorage();
+            this.inventory = this.inventory.filter(i => i.id !== id);
+            this.saveInventory();
             this.renderInventory();
+            this.showNotification('Item deleted successfully!');
         }
     }
 
-    resetInventory() {
-        // Confirm reset
-        if (confirm('Are you sure you want to reset the entire inventory? This will delete all items.')) {
-            this.inventory = [];
-            this.saveInventoryToLocalStorage();
-            this.renderInventory();
+    saveInventory() {
+        try {
+            localStorage.setItem('inventoryItems', JSON.stringify(this.inventory));
+        } catch (error) {
+            this.showNotification('Failed to save inventory', 'error');
         }
     }
 
-    saveInventoryToLocalStorage() {
-        localStorage.setItem('inventoryItems', JSON.stringify(this.inventory));
+    loadInventory() {
+        try {
+            const savedInventory = localStorage.getItem('inventoryItems');
+            if (savedInventory) {
+                this.inventory = JSON.parse(savedInventory);
+                this.renderInventory();
+            }
+        } catch (error) {
+            this.showNotification('Failed to load inventory', 'error');
+        }
     }
 
-    loadInventoryFromLocalStorage() {
-        const savedInventory = localStorage.getItem('inventoryItems');
-        if (savedInventory) {
-            this.inventory = JSON.parse(savedInventory);
-            this.renderInventory();
-        }
+    showNotification(message, type = 'success') {
+        const notificationContainer = document.getElementById('notificationContainer');
+        const notification = document.createElement('div');
+        notification.classList.add('notification', type);
+        notification.textContent = message;
+        
+        notificationContainer.appendChild(notification);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notificationContainer.removeChild(notification);
+        }, 3000);
     }
 }
 
