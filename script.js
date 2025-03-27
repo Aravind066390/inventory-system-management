@@ -110,7 +110,7 @@ function processMessage(message) {
       return "aravind as the leader karan,aditya,abdul as the colleague ";
     }
   else if (message.includes('comment')) {
-      return "you can give your feed back to the number <a href="6366739780"> 6366739780</a> it will be known to the developer as soon as possible.Any negative or positive  feedback we are willing to accept and  we will promise to  make it a more improved version  ";
+      return "you can give your feed back to the number  6366739780 it will be known to the developer as soon as possible.Any negative or positive  feedback we are willing to accept and  we will promise to  make it a more improved version  ";
     }
   else if (message.includes('feedback')) {
       return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to make it a more improved version";
