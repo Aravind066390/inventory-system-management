@@ -3,77 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Inventory Management System</title>
+    <title>Modern Inventory Management</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Inventory Management System</h1>
-            <button id="add-item-btn" class="btn">Add New Item</button>
+            <h1>Inventory Management</h1>
+            <button id="addItemBtn" class="btn-primary">
+                <i class="fas fa-plus"></i> Add New Item
+            </button>
         </header>
 
         <main>
-            <div class="inventory-grid" id="inventory-container">
+            <section id="inventoryGrid" class="inventory-grid">
                 <!-- Inventory items will be dynamically added here -->
-            </div>
+            </section>
         </main>
 
-        <!-- Add Item Modal -->
-        <div id="add-item-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn">&times;</span>
-                <h2>Add New Item</h2>
-                <form id="add-item-form">
-                    <input type="text" id="item-name" placeholder="Item Name" required>
-                    <input type="date" id="item-date" required>
-                    <input type="number" id="item-price" placeholder="Price" step="0.01" required>
-                    <input type="number" id="item-quantity" placeholder="Quantity" required>
-                    <input type="file" id="item-image" accept="image/*">
-                    <button type="submit" class="btn">Save Item</button>
-                </form>
-            </div>
+        <div class="action-buttons">
+            <button id="resetBtn" class="btn-secondary">
+                <i class="fas fa-redo"></i> Reset Inventory
+            </button>
         </div>
 
-        <!-- Edit Item Modal -->
-        <div id="edit-item-modal" class="modal">
+        <!-- Add/Edit Item Modal -->
+        <div id="itemModal" class="modal">
             <div class="modal-content">
                 <span class="close-btn">&times;</span>
-                <h2>Edit Item</h2>
-                <form id="edit-item-form">
-                    <input type="hidden" id="edit-item-id">
-                    <input type="text" id="edit-item-name" placeholder="Item Name" required>
-                    <input type="date" id="edit-item-date" required>
-                    <input type="number" id="edit-item-price" placeholder="Price" step="0.01" required>
-                    <input type="number" id="edit-item-quantity" placeholder="Quantity" required>
-                    <input type="file" id="edit-item-image" accept="image/*">
-                    <button type="submit" class="btn">Update Item</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Chatbot -->
-        <div id="chatbot-container">
-            <div id="chatbot-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="30px" height="30px">
-                    <path d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
-                </svg>
-            </div>
-            <div id="chatbot-panel" class="closed">
-                <div id="chatbot-header">
-                    <h3>Inventory Assistant</h3>
-                    <button id="close-chatbot">&times;</button>
-                </div>
-                <div id="chatbot-messages">
-                    <div class="welcome-message">
-                        Hi! I'm your inventory assistant. Ask me about managing your inventory.
+                <h2 id="modalTitle">Add New Item</h2>
+                <form id="itemForm">
+                    <input type="hidden" id="itemId">
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" id="itemName" required>
                     </div>
-                </div>
-                <div id="chatbot-input-area">
-                    <input type="text" id="chatbot-input" placeholder="Ask me something...">
-                    <button id="send-message">Send</button>
-                </div>
+                    <div class="form-group">
+                        <label for="itemDate">Date</label>
+                        <input type="date" id="itemDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemQuantity">Quantity</label>
+                        <input type="number" id="itemQuantity" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescription">Description</label>
+                        <textarea id="itemDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemImage">Item Image</label>
+                        <input type="file" id="itemImage" accept="image/*">
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="saveItemBtn">Save Item</button>
+                </form>
             </div>
         </div>
     </div>
