@@ -388,8 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('inventory');
         // Alert the user
         alert('Inventory has been cleared and saved data has been removed.');
-        // Try to close the window (may not work in all browsers)
-        window.close();
       }
     }
     // Search item functionality
