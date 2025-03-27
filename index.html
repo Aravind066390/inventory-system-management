@@ -8,75 +8,71 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>Inventory</h1>
-            </div>
-            <nav>
-                <button id="addItemBtn" class="nav-btn">Add Item</button>
-                <button id="viewInventoryBtn" class="nav-btn">View Inventory</button>
-            </nav>
-        </div>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Inventory Table -->
-            <div id="inventoryTable" class="inventory-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Date</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventoryBody">
-                        <!-- Inventory items will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-
+        <!-- Inventory Management Section -->
+        <div class="inventory-section">
+            <h1>Inventory Management System</h1>
+            
+            <!-- Add Item Button -->
+            <button id="add-item-btn" class="primary-btn">Add New Item</button>
+            
             <!-- Add Item Modal -->
-            <div id="addItemModal" class="modal">
+            <div id="add-item-modal" class="modal">
                 <div class="modal-content">
-                    <span class="close">&times;</span>
+                    <span class="close-btn">&times;</span>
                     <h2>Add New Item</h2>
-                    <form id="addItemForm">
-                        <input type="text" id="itemName" placeholder="Item Name" required>
-                        <input type="date" id="itemDate" required>
-                        <input type="number" id="itemPrice" placeholder="Price" step="0.01" required>
-                        <input type="number" id="itemQuantity" placeholder="Quantity" required>
-                        <input type="file" id="itemImage" accept="image/*">
-                        <button type="submit">Add Item</button>
+                    <form id="add-item-form">
+                        <input type="text" id="item-name" placeholder="Item Name" required>
+                        <input type="date" id="item-date" required>
+                        <input type="number" id="item-price" placeholder="Price" step="0.01" required>
+                        <input type="number" id="item-quantity" placeholder="Quantity" required>
+                        <input type="file" id="item-image" accept="image/*">
+                        <button type="submit" class="primary-btn">Save Item</button>
                     </form>
                 </div>
             </div>
-
-            <!-- Chatbot -->
-            <div id="chatbotContainer" class="chatbot-container">
-                <div id="chatbotButton" class="chatbot-button">
-                    <i class="fas fa-comment-dots"></i>
+            
+            <!-- Inventory Table -->
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-list">
+                    <!-- Inventory items will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Chatbot Section -->
+        <div class="chatbot-container">
+            <div id="chatbot-icon" class="chatbot-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                </svg>
+            </div>
+            
+            <div id="chatbot-panel" class="chatbot-panel">
+                <div class="chatbot-header">
+                    <h3>Inventory Assistant</h3>
+                    <button id="close-chatbot" class="close-btn">&times;</button>
                 </div>
-                <div id="chatbotPanel" class="chatbot-panel">
-                    <div class="chatbot-header">
-                        <h3>Inventory Assistant</h3>
-                        <button id="closeChatbot">&times;</button>
-                    </div>
-                    <div id="chatMessages" class="chat-messages"></div>
-                    <div class="chat-input">
-                        <input type="text" id="userInput" placeholder="Ask about inventory...">
-                        <button id="sendMessage">Send</button>
-                    </div>
+                <div id="chatbot-messages" class="chatbot-messages">
+                    <!-- Chatbot messages will be dynamically added here -->
+                </div>
+                <div class="chatbot-input">
+                    <input type="text" id="user-input" placeholder="Ask about the inventory system...">
+                    <button id="send-message">Send</button>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="script.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </body>
 </html>
