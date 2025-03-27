@@ -1,72 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inventory Manager</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Inventory Management System</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Inventory Management</h1>
-            <button id="addItemBtn" class="btn-primary">Add New Item</button>
-        </header>
-
-        <main>
-            <div id="inventoryContainer" class="inventory-grid"></div>
-        </main>
+  <div class="container">
+    <header>
+      <h1>Inventory Management System</h1>
+      <div class="header-buttons">
+        <button class="chat-toggle" id="chatToggleBtn">
+          <span class="chat-toggle-icon">💬</span>
+        </button>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="theme-toggle-icon">☀</span>
+        </button>
+      </div>
+    </header>
+    <!-- Search Bar Section -->
+    <div class="search-container">
+      <input type="text" id="search-bar" placeholder="Search for an item...">
+      <button onclick="searchItem()">Search</button>
     </div>
-
-    <!-- Add/Edit Item Modal -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="modalTitle">Add New Item</h2>
-            <form id="itemForm">
-                <input type="hidden" id="itemId">
-                
-                <div class="form-group">
-                    <label for="itemName">Item Name</label>
-                    <input type="text" id="itemName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemDate">Date</label>
-                    <input type="date" id="itemDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemQuantity">Quantity</label>
-                    <input type="number" id="itemQuantity" min="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemPrice">Price</label>
-                    <input type="number" id="itemPrice" step="0.01" min="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemDescription">Description</label>
-                    <textarea id="itemDescription"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="itemImage">Item Image</label>
-                    <input type="file" id="itemImage" accept="image/*">
-                    <div id="imagePreview" class="image-preview"></div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">Save Item</button>
-                    <button type="button" id="cancelBtn" class="btn-secondary">Cancel</button>
-                </div>
+    <button class="toggle-form-button" onclick="toggleFormPanel()">Add New Item</button>
+    <div class="main-content">
+      <!-- Left Panel - Inventory List -->
+      <div class="left-panel">
+        <section class="inventory-list">
+          <h2>Inventory List</h2>
+          <table id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Inventory items will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </section>
+      </div>
+      <!-- Right Panel - Add/Edit Form -->
+      <div class="right-panel" id="formPanel">
+        <section class="inventory-form">
+          <h2>Add New Item</h2>
+          <form id="inventoryForm">
+            <label for="item-name">Item Name</label>
+            <input type="text" id="item-name" placeholder="Enter item name" required>
+            <label for="item-quantity">Quantity</label>
+            <input type="number" id="item-quantity" placeholder="Enter quantity" required>
+            <label for="item-price">Price</label>
+            <input type="number" id="item-price" placeholder="Enter price" required>
+            <label for="item-description">Description</label>
+            <textarea id="item-description" placeholder="Enter item description"></textarea>
+            <label for="item-image">Image URL</label>
+            <input type="text" id="item-image" placeholder="Enter image URL">
+            <button type="submit">Add Item</button>
+          </form>
+        </section>
+      </div>
+      <!-- Item Detail View (Initially Hidden) -->
+      <div class="right-panel detail-view" id="detailPanel">
+        <div class="item-detail">
+          <h2 id="detail-title">Item Details</h2>
+          <div class="item-image">
+            <img id="detail-image" src="" alt="Item Image">
+          </div>
+          <!-- Read Mode -->
+          <div class="read-mode">
+            <div class="detail-info">
+              <p><span class="detail-label">Description:</span> <span id="detail-description" class="detail-value"></span></p>
+              <p><span class="detail-label">Price:</span> <span id="detail-price" class="detail-value"></span></p>
+              <div class="quantity-control">
+                <span class="detail-label">Quantity:</span>
+                <button onclick="decreaseQuantity()">-</button>
+                <input type="number" id="detail-quantity" readonly>
+                <button onclick="increaseQuantity()">+</button>
+              </div>
+              <p><span class="detail-label">Total Value:</span> <span id="detail-total" class="detail-value"></span></p>
+            </div>
+            <button class="edit-detail-button" onclick="switchToEditMode()">Edit Details</button>
+            <button class="back-button" onclick="hideDetailPanel()">Back to Inventory</button>
+          </div>
+          <!-- Edit Mode -->
+          <div class="edit-mode">
+            <form id="editForm">
+              <label for="edit-name">Item Name</label>
+              <input type="text" id="edit-name" required>
+              <label for="edit-description">Description</label>
+              <textarea id="edit-description"></textarea>
+              <label for="edit-price">Price</label>
+              <input type="number" id="edit-price" required>
+              <label for="edit-quantity">Quantity</label>
+              <input type="number" id="edit-quantity" required>
+              <label for="edit-image">Image URL</label>
+              <input type="text" id="edit-image">
+              <button type="submit" class="save-detail-button">Save Changes</button>
+              <button type="button" class="back-button" onclick="cancelEdit()">Cancel</button>
             </form>
+          </div>
         </div>
+      </div>
     </div>
-
-    <div id="notificationContainer" class="notification-container"></div>
-
-    <script src="script.js"></script>
+    <!-- Chatbot Component -->
+    <div class="chatbot-container" id="chatbotContainer">
+      <div class="chatbot-header">
+        <h3>Inventory Assistant</h3>
+        <button class="close-chat" onclick="toggleChatbot()">×</button>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="bot-message">Hello! I'm your inventory assistant. How can I help you today?</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Type your question here...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+    <!-- Exit Button -->
+    <button class="exit-button" onclick="exitInventory()">Exit</button>
+    <footer>
+      <p>Enhanced Inventory Management System</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
