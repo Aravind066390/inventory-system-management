@@ -3,55 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
+    <title>Inventory Management System</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeToggle">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+
+    <!-- Chatbot Icon -->
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div class="chatbot-modal" id="chatbotModal">
+        <div class="chatbot-header">
+            <h3>Inventory Assistant</h3>
+            <button id="closeChatbot">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages"></div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Ask me about inventory...">
+            <button id="sendChatbotMessage">Send</button>
+        </div>
+    </div>
+
+    <!-- Main Inventory Container -->
     <div class="container">
-        <header>
-            <h1>Inventory Management</h1>
-            <button id="themeToggleBtn">🌙</button>
-        </header>
+        <h1>Inventory Management System</h1>
+        
+        <!-- Add Item Form -->
+        <form id="inventoryForm">
+            <input type="text" id="itemName" placeholder="Item Name" required>
+            <input type="number" id="itemQuantity" placeholder="Quantity" required>
+            <input type="number" id="itemPrice" placeholder="Price" required>
+            <input type="file" id="itemImage" accept="image/*">
+            <input type="date" id="itemDate" required>
+            <button type="submit">Add Item</button>
+        </form>
 
-        <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Search item...">
-            <button id="searchButton">Search</button>
-        </div>
-
-        <button id="toggleFormButton">Add New Item</button>
-
-        <div id="formPanel" class="hidden">
-            <h2>Add Item</h2>
-            <form id="inventoryForm">
-                <input type="text" id="item-name" placeholder="Item Name" required>
-                <input type="number" id="item-quantity" placeholder="Quantity" required>
-                <input type="number" id="item-price" placeholder="Price" required>
-                <input type="date" id="item-date" required>
-                <button type="submit">Add Item</button>
-            </form>
-        </div>
-
+        <!-- Inventory Table -->
         <table id="inventoryTable">
             <thead>
                 <tr>
-                    <th>Item</th>
+                    <th>Image</th>
+                    <th>Name</th>
                     <th>Quantity</th>
                     <th>Price</th>
-                    <th>Date</th>
+                    <th>Date Added</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="inventoryList"></tbody>
         </table>
+    </div>
 
-        <!-- Chatbot -->
-        <button id="chatToggleBtn">💬 Chat</button>
-        <div id="chatbotContainer" class="hidden">
-            <div id="chatbotMessages">
-                <p><strong>Bot:</strong> Hello! How can I assist you?</p>
-            </div>
-            <input type="text" id="chatInput" placeholder="Ask something...">
-            <button id="sendMessageButton">Send</button>
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Item</h2>
+            <form id="editForm">
+                <input type="text" id="editItemName" required>
+                <input type="number" id="editItemQuantity" required>
+                <input type="number" id="editItemPrice" required>
+                <input type="file" id="editItemImage" accept="image/*">
+                <button type="submit">Update Item</button>
+            </form>
         </div>
     </div>
 
