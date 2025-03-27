@@ -1,171 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Inventory Management System</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Inventory Management System</h1>
-            <div class="header-buttons">
-                <button class="chat-toggle" id="chatToggleBtn">
-                    <span class="chat-toggle-icon">💬</span>
-                </button>
-                <button class="theme-toggle" id="themeToggleBtn">
-                    <span class="theme-toggle-icon">☀</span>
-                </button>
-            </div>
-        </header>
+document.addEventListener("DOMContentLoaded", function () {
+    const chatToggleBtn = document.getElementById("chatToggleBtn");
+    const chatbotContainer = document.getElementById("chatbotContainer");
+    const closeChatButton = document.getElementById("closeChatButton");
+    const chatInput = document.getElementById("chatInput");
+    const sendMessageButton = document.getElementById("sendMessageButton");
+    const chatbotMessages = document.getElementById("chatbotMessages");
 
-        <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Search for an item...">
-            <button id="searchButton">Search</button>
-        </div>
+    // Toggle chatbot visibility
+    chatToggleBtn.addEventListener("click", function () {
+        chatbotContainer.style.display = "block";
+    });
 
-        <button class="toggle-form-button" id="toggleFormButton">Add New Item</button>
+    closeChatButton.addEventListener("click", function () {
+        chatbotContainer.style.display = "none";
+    });
 
-        <div class="main-content">
-            <!-- Left Panel - Inventory List -->
-            <div class="left-panel">
-                <section class="inventory-list">
-                    <h2>Inventory List</h2>
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Date</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Inventory items will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </section>
-            </div>
+    // Chatbot response function
+    function getChatbotResponse(message) {
+        message = message.toLowerCase();
 
-            <!-- Right Panel - Add/Edit Form -->
-            <div class="right-panel" id="formPanel">
-                <section class="inventory-form">
-                    <h2>Add New Item</h2>
-                    <form id="inventoryForm">
-                        <div class="form-group">
-                            <label for="item-name">Item Name</label>
-                            <input type="text" id="item-name" placeholder="Enter item name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="item-quantity">Quantity</label>
-                            <input type="number" id="item-quantity" placeholder="Enter quantity" required min="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="item-price">Price</label>
-                            <input type="number" id="item-price" placeholder="Enter price" required min="0" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="item-date">Date</label>
-                            <input type="date" id="item-date" placeholder="Enter the date">
-                        </div>
-                        <div class="form-group">
-                            <label for="item-description">Description</label>
-                            <textarea id="item-description" placeholder="Enter item description"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="item-image">Image URL</label>
-                            <input type="text" id="item-image" placeholder="Enter image URL">
-                        </div>
-                        <button type="submit">Add Item</button>
-                    </form>
-                </section>
-            </div>
+        if (message.includes("hello") || message.includes("hi") || message.includes("hey")) {
+            return "Hello! How can I help you with your inventory management today?";
+        } else if (message.includes("add") && message.includes("item")) {
+            return "To add a new item, click the 'Add New Item' button at the top of the page, fill in the details, and click 'Add Item'.";
+        } else if (message.includes("delete") || message.includes("remove")) {
+            return "To delete an item, find it in the inventory list and click the 'Delete' button in the Actions column.";
+        } else if (message.includes("edit") || message.includes("update")) {
+            return "To edit an item, first click 'View' next to the item in the inventory list, then click 'Edit Details' in the detail panel.";
+        } else if (message.includes("search")) {
+            return "To search for items, type in the search bar at the top and press Enter or click the 'Search' button.";
+        } else if (message.includes("dark") || message.includes("light") || message.includes("theme")) {
+            return "You can toggle between dark and light themes by clicking the sun/moon icon in the top-right corner.";
+        } else if (message.includes("quantity")) {
+            return "You can update item quantity by viewing the item details and using the + and - buttons next to the quantity field.";
+        } else if (message.includes("thank")) {
+            return "You're welcome! Feel free to ask if you need any more help with your inventory.";
+        } else if (message.includes("help")) {
+            return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities and some other basic tasks. What would you like to know about?";
+        } else if (message.includes("improvement") || message.includes("struck") || message.includes("slow")) {
+            return "We will try to develop it further and make it more suitable and user-friendly. Sorry for the inconvenience.";
+        } else if (message.includes("feature")) {
+            return "This is a simple inventory management system. For complex management and more user-friendly features, it's still under development. We promise more features in the future. Please use the features that are already available.";
+        } else if (message.includes("description")) {
+            return "It contains details about the stored items. Search for the item, press 'View', and you will find the description.";
+        } else if (message.includes("price") || message.includes("money") || message.includes("cost")) {
+            return "The price value displayed is for a single quantity. Press the 'View' icon to know its total price with respect to quantity.";
+        } else if (message.includes("image") || message.includes("photo")) {
+            return "You can upload a respective image to find the stored item easily.";
+        } else if (message.includes("currency")) {
+            return "The system is based on Indian currency (INR).";
+        } else if (message.includes("team")) {
+            return "Aravind is the leader, with Karan, Aditya, and Abdul as colleagues.";
+        } else if (message.includes("comment") || message.includes("feedback")) {
+            return "You can give your feedback to the number 6366739780. It will be known to the developer as soon as possible. We are willing to accept both positive and negative feedback and promise to improve in the future.";
+        } else if (message.includes("useless")) {
+            return "Sorry for the inconvenience. We will be better in the future with an improved version.";
+        } else {
+            return "I'm not sure how to help with that. Try asking about adding, editing, or deleting items, searching the inventory, or changing the theme.";
+        }
+    }
 
-            <!-- Item Detail View -->
-            <div class="right-panel detail-view" id="detailPanel">
-                <div class="item-detail">
-                    <h2 id="detail-title">Item Details</h2>
-                    <div class="item-image">
-                        <img id="detail-image" src="" alt="Item Image">
-                    </div>
+    // Function to display message in chat
+    function displayMessage(sender, text) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+        messageDiv.textContent = text;
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
 
-                    <!-- Read Mode -->
-                    <div class="read-mode">
-                        <div class="detail-info">
-                            <p><strong>Description:</strong> <span id="detail-description"></span></p>
-                            <p><strong>Price:</strong> <span id="detail-price"></span></p>
-                            <p><strong>Date:</strong> <span id="detail-date"></span></p>
-                            <div class="quantity-control">
-                                <strong>Quantity:</strong>
-                                <button id="decrease-quantity">-</button>
-                                <input type="number" id="detail-quantity" readonly>
-                                <button id="increase-quantity">+</button>
-                            </div>
-                            <p><strong>Total Value:</strong> <span id="detail-total"></span></p>
-                        </div>
-                        <div class="detail-actions">
-                            <button id="edit-detail-button">Edit Details</button>
-                            <button id="back-to-inventory">Back to Inventory</button>
-                        </div>
-                    </div>
+    // Handle user input
+    function handleUserInput() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === "") return;
 
-                    <!-- Edit Mode -->
-                    <div class="edit-mode">
-                        <form id="editForm">
-                            <div class="form-group">
-                                <label for="edit-name">Item Name</label>
-                                <input type="text" id="edit-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-description">Description</label>
-                                <textarea id="edit-description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-price">Price</label>
-                                <input type="number" id="edit-price" required min="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-date">Date</label>
-                                <input type="date" id="edit-date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-quantity">Quantity</label>
-                                <input type="number" id="edit-quantity" required min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-image">Image URL</label>
-                                <input type="text" id="edit-image">
-                            </div>
-                            <div class="edit-form-actions">
-                                <button type="submit">Save Changes</button>
-                                <button type="button" id="cancel-edit">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        displayMessage("user", userMessage);
+        setTimeout(() => {
+            const botResponse = getChatbotResponse(userMessage);
+            displayMessage("bot", botResponse);
+        }, 500);
 
-        <!-- Chatbot Component -->
-        <div class="chatbot-container" id="chatbotContainer">
-            <div class="chatbot-header">
-                <h3>Inventory Assistant</h3>
-                <button class="close-chat" id="closeChatButton">×</button>
-            </div>
-            <div class="chatbot-messages" id="chatbotMessages">
-                <div class="bot-message">Hello! I'm your inventory assistant. How can I help you today?</div>
-            </div>
-            <div class="chatbot-input">
-                <input type="text" id="chatInput" placeholder="Type your question here...">
-                <button id="sendMessageButton">Send</button>
-            </div>
-        </div>
+        chatInput.value = "";
+    }
 
-        <!-- Reset Button -->
-        <button class="reset-button" id="resetButton">Reset</button>
-    </div>
-</body>
-</html>
+    sendMessageButton.addEventListener("click", handleUserInput);
+    chatInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            handleUserInput();
+        }
+    });
+});
