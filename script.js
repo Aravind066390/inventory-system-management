@@ -180,18 +180,222 @@ class InventoryManager {
     }
 
     // Chatbot Functionality
-    initializeChatbot() {
-        this.chatbotMessages = [];
-        this.chatbotResponses = [
-            "Welcome to Inventory Assistant! I can help you manage your inventory.",
-            "To add an item, fill out the form above and click 'Add Item'.",
-            "You can edit or delete items using the buttons in the Actions column.",
-            "Need help tracking stock levels? I'm here to assist!",
-            "Want to know your total inventory value? Just ask!",
-            "Tips for inventory management: regularly update your stock, set reorder points.",
-            "Remember to keep your inventory data accurate and up-to-date."
-        ];
+    class InventoryAssistant {
+    constructor(inventoryManager) {
+        this.inventoryManager = inventoryManager;
+        this.conversationContext = {
+            lastQuery: null,
+            queryCount: 0,
+            userInterests: new Set()
+        };
+        this.initializeKnowledgeBase();
+        this.setupNaturalLanguageProcessing();
     }
+
+    // Initialize Comprehensive Knowledge Base
+    initializeKnowledgeBase() {
+        this.knowledgeBase = {
+            // Inventory Management Insights
+            insights: [
+                "Regularly update your inventory to maintain accuracy.",
+                "Consider setting reorder points for critical items.",
+                "Track seasonal variations in your inventory.",
+                "Use data-driven insights to optimize stock levels."
+            ],
+
+            // Advanced Inventory Strategies
+            strategies: [
+                "Implement just-in-time inventory management.",
+                "Use ABC analysis to prioritize inventory items.",
+                "Consider demand forecasting techniques.",
+                "Integrate inventory management with sales data."
+            ],
+
+            // Contextual Response Templates
+            responseTemplates: {
+                total_value: [
+                    "Your total inventory value is ${value}.",
+                    "Current inventory worth: ${value}.",
+                    "Total stock valuation: ${value}."
+                ],
+                item_analysis: [
+                    "You have ${count} items with average price of ${avgPrice}.",
+                    "${count} unique items in your inventory.",
+                    "Inventory snapshot: ${count} items, average unit price: ${avgPrice}."
+                ]
+            }
+        };
+    }
+
+    // Advanced Natural Language Processing Setup
+    setupNaturalLanguageProcessing() {
+        this.intentMatchers = {
+            greetings: [
+                /\b(hi|hello|hey|greetings)\b/i,
+                /\b(what can you do|help|assist)\b/i
+            ],
+            inventory_value: [
+                /\b(total value|inventory worth|stock value)\b/i,
+                /\b(how much is my inventory|total stock)\b/i
+            ],
+            item_count: [
+                /\b(how many items|total items|item count)\b/i,
+                /\b(number of products|inventory size)\b/i
+            ],
+            low_stock: [
+                /\b(low stock|running low|need to restock)\b/i,
+                /\b(inventory levels|stock levels)\b/i
+            ]
+        };
+    }
+
+    // Advanced Intent Recognition
+    recognizeIntent(message) {
+        for (const [intent, patterns] of Object.entries(this.intentMatchers)) {
+            if (patterns.some(pattern => pattern.test(message))) {
+                return intent;
+            }
+        }
+        return 'default';
+    }
+
+    // Generate Intelligent Response
+    generateResponse(intent, message) {
+        const inventory = this.inventoryManager.inventory;
+        
+        // Context Tracking
+        this.conversationContext.queryCount++;
+        this.conversationContext.lastQuery = intent;
+        this.conversationContext.userInterests.add(intent);
+
+        // Response Generation
+        switch(intent) {
+            case 'greetings':
+                return this.getGreetingResponse();
+            
+            case 'inventory_value':
+                return this.getInventoryValueResponse(inventory);
+            
+            case 'item_count':
+                return this.getItemCountResponse(inventory);
+            
+            case 'low_stock':
+                return this.getLowStockResponse(inventory);
+            
+            default:
+                return this.getDefaultResponse();
+        }
+    }
+
+    // Specific Response Generators
+    getGreetingResponse() {
+        const greetings = [
+            "Hello! I'm your Inventory Assistant. How can I help you today?",
+            "Hi there! Ready to manage your inventory efficiently?",
+            "Greetings! What would you like to know about your inventory?"
+        ];
+        return greetings[Math.floor(Math.random() * greetings.length)];
+    }
+
+    getInventoryValueResponse(inventory) {
+        const totalValue = inventory.reduce((total, item) => 
+            total + (parseFloat(item.price) * parseFloat(item.quantity)), 0);
+        
+        const templates = this.knowledgeBase.responseTemplates.total_value;
+        const template = templates[Math.floor(Math.random() * templates.length)];
+        
+        return template.replace('${value}', `$${totalValue.toFixed(2)}`);
+    }
+
+    getItemCountResponse(inventory) {
+        const count = inventory.length;
+        const avgPrice = inventory.reduce((total, item) => 
+            total + parseFloat(item.price), 0) / count || 0;
+        
+        const templates = this.knowledgeBase.responseTemplates.item_analysis;
+        const template = templates[Math.floor(Math.random() * templates.length)];
+        
+        return template
+            .replace('${count}', count)
+            .replace('${avgPrice}', `$${avgPrice.toFixed(2)}`);
+    }
+
+    getLowStockResponse(inventory) {
+        const lowStockItems = inventory.filter(item => 
+            parseFloat(item.quantity) < 5 && parseFloat(item.quantity) > 0);
+        
+        if (lowStockItems.length === 0) {
+            return "Great news! No items are currently low on stock.";
+        }
+        
+        const itemList = lowStockItems.map(item => 
+            `${item.name}: Only ${item.quantity} remaining`).join('\n');
+        
+        return `Low Stock Alert:\n${itemList}`;
+    }
+
+    getDefaultResponse() {
+        const defaultResponses = [
+            "I'm not sure I understand. Could you rephrase that?",
+            "I can help with inventory-related questions. Try asking about total value, item count, or low stock.",
+            "Sorry, I didn't catch that. Can you be more specific about your inventory?"
+        ];
+        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+
+    // Process User Message
+    processMessage(message) {
+        const intent = this.recognizeIntent(message);
+        return this.generateResponse(intent, message);
+    }
+}
+
+class InventoryManager {
+    constructor() {
+        this.inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        this.chatbot = new InventoryAssistant(this);
+        this.initializeEventListeners();
+        this.renderInventory();
+        this.setupThemeToggle();
+    }
+
+    // Existing methods remain the same...
+
+    // Updated Chatbot Initialization in Send Message
+    sendChatbotMessage = () => {
+        const input = document.getElementById('chatbotInput');
+        const messagesContainer = document.getElementById('chatbotMessages');
+
+        if (input.value.trim() === '') return;
+
+        // User Message
+        const userMessageEl = document.createElement('div');
+        userMessageEl.classList.add('user-message');
+        userMessageEl.textContent = `You: ${input.value}`;
+        messagesContainer.appendChild(userMessageEl);
+
+        // Bot Response
+        const botMessageEl = document.createElement('div');
+        botMessageEl.classList.add('bot-message');
+        
+        // Process user message through the chatbot
+        const botResponse = this.chatbot.processMessage(input.value);
+        
+        botMessageEl.textContent = `Assistant: ${botResponse}`;
+        messagesContainer.appendChild(botMessageEl);
+
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Clear input
+        input.value = '';
+    }
+}
+
+// Initialize the Inventory Manager when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new InventoryManager();
+});
 
     // Toggle Chatbot
     toggleChatbot = () => {
