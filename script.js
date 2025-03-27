@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Exit button functionality to clear all inventory and localStorage
     function exitInventory() {
-      if (confirm('Are you sure you want to exit? This will clear all inventory data.')) {
+      if (confirm('Are you sure you want to reset?')) {
         // Clear the table
         const tableBody = document.querySelector('#inventoryTable tbody');
         tableBody.innerHTML = '';
