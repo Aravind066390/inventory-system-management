@@ -5,32 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Inventory Management System</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <!-- Theme Toggle -->
-        <button id="theme-toggle" class="theme-toggle">
-            <i class="ri-moon-line" id="theme-icon"></i>
-        </button>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Inventory</h1>
+            </div>
+            <nav>
+                <button id="addItemBtn" class="nav-btn">Add Item</button>
+                <button id="viewInventoryBtn" class="nav-btn">View Inventory</button>
+            </nav>
+        </div>
 
-        <!-- Inventory Management Section -->
-        <div class="inventory-section">
-            <h1>Inventory Management System</h1>
-            
-            <!-- Add Item Form -->
-            <form id="add-item-form">
-                <input type="text" id="item-name" placeholder="Item Name" required>
-                <input type="date" id="item-date" required>
-                <input type="number" id="item-price" placeholder="Price" step="0.01" required>
-                <input type="number" id="item-quantity" placeholder="Quantity" required>
-                <input type="file" id="item-image" accept="image/*">
-                <button type="submit">Add Item</button>
-            </form>
-
+        <!-- Main Content Area -->
+        <main class="main-content">
             <!-- Inventory Table -->
-            <div class="inventory-table-container">
-                <table id="inventory-table">
+            <div id="inventoryTable" class="inventory-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Image</th>
@@ -41,51 +34,49 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="inventory-body">
+                    <tbody id="inventoryBody">
                         <!-- Inventory items will be dynamically added here -->
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <!-- Chatbot Section -->
-        <div class="chatbot-container">
-            <div class="chatbot-icon" id="chatbot-icon">
-                <i class="ri-message-3-line"></i>
-            </div>
-            <div class="chatbot-window" id="chatbot-window">
-                <div class="chatbot-header">
-                    <h3>Inventory Assistant</h3>
-                    <button id="close-chatbot">×</button>
-                </div>
-                <div class="chatbot-messages" id="chatbot-messages">
-                    <div class="bot-message">Hello! How can I help you with the inventory system?</div>
-                </div>
-                <div class="chatbot-input">
-                    <input type="text" id="user-message" placeholder="Ask about the inventory system...">
-                    <button id="send-message">Send</button>
+            <!-- Add Item Modal -->
+            <div id="addItemModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Add New Item</h2>
+                    <form id="addItemForm">
+                        <input type="text" id="itemName" placeholder="Item Name" required>
+                        <input type="date" id="itemDate" required>
+                        <input type="number" id="itemPrice" placeholder="Price" step="0.01" required>
+                        <input type="number" id="itemQuantity" placeholder="Quantity" required>
+                        <input type="file" id="itemImage" accept="image/*">
+                        <button type="submit">Add Item</button>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Edit Modal -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Edit Item</h2>
-            <form id="edit-item-form">
-                <input type="hidden" id="edit-item-index">
-                <input type="text" id="edit-item-name" placeholder="Item Name" required>
-                <input type="date" id="edit-item-date" required>
-                <input type="number" id="edit-item-price" placeholder="Price" step="0.01" required>
-                <input type="number" id="edit-item-quantity" placeholder="Quantity" required>
-                <input type="file" id="edit-item-image" accept="image/*">
-                <button type="submit">Update Item</button>
-            </form>
-        </div>
+            <!-- Chatbot -->
+            <div id="chatbotContainer" class="chatbot-container">
+                <div id="chatbotButton" class="chatbot-button">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div id="chatbotPanel" class="chatbot-panel">
+                    <div class="chatbot-header">
+                        <h3>Inventory Assistant</h3>
+                        <button id="closeChatbot">&times;</button>
+                    </div>
+                    <div id="chatMessages" class="chat-messages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="userInput" placeholder="Ask about inventory...">
+                        <button id="sendMessage">Send</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </body>
 </html>
