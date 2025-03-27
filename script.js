@@ -69,17 +69,17 @@ function processMessage(message) {
     return "You're welcome! Feel free to ask if you need any more help with your inventory.";
   } 
   else if (message.includes('help')) {
-    return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
+    return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities and some other basic tasks . What would you like to know about?";
   }else if (message.includes('improvement')) {
-      return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
+      return "we will try to develop it further and make it more suitable and  user friendly sorry for the inconvenience";
     } 
   
   else if (message.includes('struck')) {
-      return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
+      return "we will try to develop it further and make it more suitable and  user friendly sorry for the inconvenience";
     } 
   
   else if (message.includes('slow')) {
-      return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
+      return "we will try to develop it further and make it more suitable and  user friendly sorry for the inconvenience";
     } 
   else if (message.includes('feature')) {
       return "it is a simple inventory management system for complex management and more userfriendly features its still under development we promise more features in future please use the features which is already available ";
@@ -104,13 +104,13 @@ function processMessage(message) {
       return "you can upload respective image to find out stored image easily";
     }
   else if (message.includes('currency')) {
-      return "it is based on indian currency";
+      return "it is based on indian currency (INR) ";
     }
   else if (message.includes('team')) {
       return "aravind as the leader karan,aditya,abdul as the colleague ";
     }
   else if (message.includes('comment')) {
-      return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to  make it a more improved version  ";
+      return "you can give your feed back to the number <a href="6366739780"> 6366739780</a> it will be known to the developer as soon as possible.Any negative or positive  feedback we are willing to accept and  we will promise to  make it a more improved version  ";
     }
   else if (message.includes('feedback')) {
       return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to make it a more improved version";
