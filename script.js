@@ -112,7 +112,7 @@ else if (message.includes('comment')) {
     return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to  make it a more improved version  ";
   }
 else if (message.includes('feedback')) {
-    return "you can give your feed back to the number <a href="6366739780">6366739780</a> it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to make it a more improved version or the feedback form is available ";
+    return "you can give your feed back to the number 6366739780 it will be known to the developer as soon as possible any negative or positive  feedback we are willing to accept and  we will promise to make it a more improved version or the feedback form is available ";
   }
 else if (message.includes('useless')) {
     return "sorry for the inconvenience we will be better in future with improved version  ";
