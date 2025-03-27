@@ -3,77 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Modern Inventory Management System</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <div class="theme-toggle">
-        <button id="themeToggle">
-            <i class="fas fa-moon" id="themeIcon"></i>
-        </button>
-    </div>
-
-    <!-- Chatbot Icon -->
-    <div class="chatbot-icon" id="chatbotIcon">
-        <i class="fas fa-robot"></i>
-    </div>
-
-    <!-- Chatbot Modal -->
-    <div class="chatbot-modal" id="chatbotModal">
-        <div class="chatbot-header">
-            <h3>Inventory Assistant</h3>
-            <button id="closeChatbot">&times;</button>
-        </div>
-        <div class="chatbot-messages" id="chatbotMessages"></div>
-        <div class="chatbot-input">
-            <input type="text" id="chatbotInput" placeholder="Ask me about inventory...">
-            <button id="sendChatbotMessage">Send</button>
-        </div>
-    </div>
-
-    <!-- Main Inventory Container -->
     <div class="container">
-        <h1>Inventory Pro</h1>
-        
-        <!-- Add Item Form -->
-        <form id="inventoryForm">
-            <input type="text" id="itemName" placeholder="Item Name" required>
-            <input type="number" id="itemQuantity" placeholder="Quantity" required>
-            <input type="number" id="itemPrice" placeholder="Price" required>
-            <input type="file" id="itemImage" accept="image/*">
-            <input type="date" id="itemDate" required>
-            <button type="submit">Add Item</button>
-        </form>
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="theme-toggle">
+            <i class="ri-moon-line" id="theme-icon"></i>
+        </button>
 
-        <!-- Inventory Table -->
-        <table id="inventoryTable">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Date Added</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryList"></tbody>
-        </table>
+        <!-- Inventory Management Section -->
+        <div class="inventory-section">
+            <h1>Inventory Management System</h1>
+            
+            <!-- Add Item Form -->
+            <form id="add-item-form">
+                <input type="text" id="item-name" placeholder="Item Name" required>
+                <input type="date" id="item-date" required>
+                <input type="number" id="item-price" placeholder="Price" step="0.01" required>
+                <input type="number" id="item-quantity" placeholder="Quantity" required>
+                <input type="file" id="item-image" accept="image/*">
+                <button type="submit">Add Item</button>
+            </form>
+
+            <!-- Inventory Table -->
+            <div class="inventory-table-container">
+                <table id="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-body">
+                        <!-- Inventory items will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chatbot Section -->
+        <div class="chatbot-container">
+            <div class="chatbot-icon" id="chatbot-icon">
+                <i class="ri-message-3-line"></i>
+            </div>
+            <div class="chatbot-window" id="chatbot-window">
+                <div class="chatbot-header">
+                    <h3>Inventory Assistant</h3>
+                    <button id="close-chatbot">×</button>
+                </div>
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <div class="bot-message">Hello! How can I help you with the inventory system?</div>
+                </div>
+                <div class="chatbot-input">
+                    <input type="text" id="user-message" placeholder="Ask about the inventory system...">
+                    <button id="send-message">Send</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Modal -->
-    <div id="editModal" class="modal">
+    <div id="edit-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close-modal">&times;</span>
             <h2>Edit Item</h2>
-            <form id="editForm">
-                <input type="text" id="editItemName" required>
-                <input type="number" id="editItemQuantity" required>
-                <input type="number" id="editItemPrice" required>
-                <input type="file" id="editItemImage" accept="image/*">
+            <form id="edit-item-form">
+                <input type="hidden" id="edit-item-index">
+                <input type="text" id="edit-item-name" placeholder="Item Name" required>
+                <input type="date" id="edit-item-date" required>
+                <input type="number" id="edit-item-price" placeholder="Price" step="0.01" required>
+                <input type="number" id="edit-item-quantity" placeholder="Quantity" required>
+                <input type="file" id="edit-item-image" accept="image/*">
                 <button type="submit">Update Item</button>
             </form>
         </div>
