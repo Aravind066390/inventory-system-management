@@ -70,7 +70,7 @@ function processMessage(message) {
   } else if (message.includes('help')) {
     return "I can help you with: adding items, editing items, deleting items, searching inventory, changing themes, and managing quantities. What would you like to know about?";
   } else if (message.includes('improvement')) {
-    return "we will try to develop it further and make it more suitable and  user friendly soory for the inconvenience";
+    return "we will try to develop it further and make it more suitable and  user friendly sorry for the inconvenience";
   } 
 
 else if (message.includes('struck')) {
